@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Windows.Forms;
 using Tekla.Structures.Dialog;
 
 namespace BeamPlugin
@@ -8,12 +8,16 @@ namespace BeamPlugin
     {
         public BeamPluginForm()
         {
+            //MessageBox.Show("GratingForm Loading");
+
             InitializeComponent();
         }
 
         //Use default values for plugins in models without a standard attribute file
         protected override string LoadValuesPath(string fileName)
         {
+            //MessageBox.Show("LoadValuesPath");
+
             SetAttributeValue(textBoxLengthFactor, 2d);  // One line for each plugin attribute
             SetAttributeValue(textBoxProfile, "HEA300");
             string Result = base.LoadValuesPath(fileName);

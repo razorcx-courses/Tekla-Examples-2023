@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeamBuilder.cs" />
     <Compile Include="BeamPluginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,12 +81,15 @@
       <DependentUpon>BeamPluginForm.cs</DependentUpon>
     </Compile>
     <Compile Include="BeamPlugin.cs" />
+    <Compile Include="InputService.cs" />
+    <Compile Include="PointBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="StructuresData.cs" />
     <EmbeddedResource Include="BeamPluginForm.resx">
       <DependentUpon>BeamPluginForm.cs</DependentUpon>
     </EmbeddedResource>
