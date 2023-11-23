@@ -95,7 +95,10 @@
     <Compile Include="BasicViews.Designer.cs">
       <DependentUpon>BasicViews.cs</DependentUpon>
     </Compile>
+    <Compile Include="CoordinateSystemHelper.cs" />
+    <Compile Include="DrawingHelper.cs" />
     <Compile Include="FormData.cs" />
+    <Compile Include="PartFetcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="BasicViews.resx">
