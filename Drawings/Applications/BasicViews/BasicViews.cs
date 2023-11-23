@@ -31,22 +31,14 @@ namespace BasicViews
         /// <returns></returns>
         private CoordinateSystem GetBasicViewsCoordinateSystemForFrontView(CoordinateSystem objectCoordinateSystem)
         {
-            var result = new CoordinateSystem
-            {
-                Origin = new Point(objectCoordinateSystem.Origin),
-                AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
-                AxisY = new Vector(objectCoordinateSystem.AxisY)
-            };
+            var coordSystem = GetCoordinateSystem(objectCoordinateSystem);
 
-            var tempVector = (result.AxisX.Cross(_upDirection));
-            
-            if(tempVector == new Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
+            var tempVector = GetTempVector(objectCoordinateSystem, coordSystem);
 
-            result.AxisX = tempVector.Cross(_upDirection).GetNormal();
-            result.AxisY = _upDirection.GetNormal();
+            coordSystem.AxisX = tempVector.Cross(_upDirection).GetNormal();
+            coordSystem.AxisY = _upDirection.GetNormal();
 
-            return result;
+            return coordSystem;
         }
         
         /// <summary>
@@ -57,22 +49,14 @@ namespace BasicViews
         /// <returns></returns>
         private CoordinateSystem GetBasicViewsCoordinateSystemForTopView(CoordinateSystem objectCoordinateSystem)
         {
-            var result = new CoordinateSystem
-            {
-                Origin = new Point(objectCoordinateSystem.Origin),
-                AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
-                AxisY = new Vector(objectCoordinateSystem.AxisY)
-            };
+            var coordSystem = GetCoordinateSystem(objectCoordinateSystem);
 
-            var tempVector = (result.AxisX.Cross(_upDirection));
+            var tempVector = GetTempVector(objectCoordinateSystem, coordSystem);
 
-            if(tempVector == new Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
+            coordSystem.AxisX = tempVector.Cross(_upDirection);
+            coordSystem.AxisY = tempVector;
 
-            result.AxisX = tempVector.Cross(_upDirection);
-            result.AxisY = tempVector;
-
-            return result;
+            return coordSystem;
         }
 
         /// <summary>
@@ -83,22 +67,33 @@ namespace BasicViews
         /// <returns></returns>
         private CoordinateSystem GetBasicViewsCoordinateSystemForEndView(CoordinateSystem objectCoordinateSystem)
         {
-            var result = new CoordinateSystem
+            var coordSystem = GetCoordinateSystem(objectCoordinateSystem);
+
+            var tempVector = GetTempVector(objectCoordinateSystem, coordSystem);
+
+            coordSystem.AxisX = tempVector;
+            coordSystem.AxisY = _upDirection;
+
+            return coordSystem;
+        }
+
+        private Vector GetTempVector(CoordinateSystem objectCoordinateSystem, CoordinateSystem coordSystem)
+        {
+            var tempVector = (coordSystem.AxisX.Cross(_upDirection));
+
+            if (tempVector == new Vector())
+                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
+            return tempVector;
+        }
+
+        private static CoordinateSystem GetCoordinateSystem(CoordinateSystem objectCoordinateSystem)
+        {
+            return new CoordinateSystem
             {
                 Origin = new Point(objectCoordinateSystem.Origin),
                 AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
                 AxisY = new Vector(objectCoordinateSystem.AxisY)
             };
-
-            var tempVector = (result.AxisX.Cross(_upDirection));
-
-            if(tempVector == new Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
-
-            result.AxisX = tempVector;
-            result.AxisY = _upDirection;
-
-            return result;
         }
 
         #endregion
@@ -257,10 +252,15 @@ namespace BasicViews
             
             while(myMembers.MoveNext())
             {
-                if(myMembers.Current is Tekla.Structures.Model.Task)
-                    parts.AddRange(GetTaskParts(myMembers.Current as Tekla.Structures.Model.Task));
-                else if(myMembers.Current is Tekla.Structures.Model.Part)
-                    parts.Add(myMembers.Current.Identifier);
+                switch (myMembers.Current)
+                {
+                    case Task current:
+                        parts.AddRange(GetTaskParts(current));
+                        break;
+                    case Part _:
+                        parts.Add(myMembers.Current.Identifier);
+                        break;
+                }
             }
 
             return parts;
@@ -275,19 +275,24 @@ namespace BasicViews
         /// <param name="modelObjectName"></param>
         /// <param name="myDrawing"></param>
         /// <param name="parts"></param>
-        private void CreateViews(CoordinateSystem modelObjectCoordSys, string modelObjectName, GADrawing myDrawing, ArrayList parts)
+        private void CreateViews(CoordinateSystem modelObjectCoordSys, string modelObjectName, 
+            GADrawing myDrawing, ArrayList parts)
         {
             if(createFrontView.Checked)
-                AddView("Front view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
+                AddView("Front view of " + modelObjectName, myDrawing, parts, 
+                    GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
 
             if(createTopView.Checked)
-                AddView("Top view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForTopView(modelObjectCoordSys));
+                AddView("Top view of " + modelObjectName, myDrawing, parts, 
+                    GetBasicViewsCoordinateSystemForTopView(modelObjectCoordSys));
 
             if(createEndView.Checked)
-                AddView("End view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForEndView(modelObjectCoordSys));
+                AddView("End view of " + modelObjectName, myDrawing, parts,
+                    GetBasicViewsCoordinateSystemForEndView(modelObjectCoordSys));
 
             if(create3dView.Checked)
-                AddRotatedView("3d view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
+                AddRotatedView("3d view of " + modelObjectName, myDrawing, parts, 
+                    GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
         }     
 
         /// <summary>
@@ -299,10 +304,8 @@ namespace BasicViews
         /// <param name="coordinateSystem"></param>
         private void AddView(String name, Drawing myDrawing, ArrayList parts, CoordinateSystem coordinateSystem)
         {
-            var myView = new Tekla.Structures.Drawing.View(myDrawing.GetSheet(),
-                                                                                     coordinateSystem,
-                                                                                     coordinateSystem,
-                                                                                     parts);
+            var myView = new Tekla.Structures.Drawing.View(
+                myDrawing.GetSheet(), coordinateSystem, coordinateSystem, parts);
 
             myView.Name = name;
             myView.Insert();
@@ -315,7 +318,7 @@ namespace BasicViews
         /// <param name="myDrawing"></param>
         /// <param name="parts"></param>
         /// <param name="coordinateSystem"></param>
-        private void AddRotatedView(String name, Drawing myDrawing, ArrayList parts, CoordinateSystem coordinateSystem)
+        private void AddRotatedView(string name, Drawing myDrawing, ArrayList parts, CoordinateSystem coordinateSystem)
         {
             var displayCoordinateSystem = new CoordinateSystem();
 
