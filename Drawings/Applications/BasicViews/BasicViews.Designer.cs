@@ -1,4 +1,4 @@
-namespace DrawingTestApplication1
+namespace BasicViews
 {
     partial class BasicViews
     {

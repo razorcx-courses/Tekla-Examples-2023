@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Windows.Forms;
-
-using Tekla.Structures.Model;
 using Tekla.Structures.Drawing;
+using Tekla.Structures.Geometry3d;
+using Tekla.Structures.Model;
+using ModelObject = Tekla.Structures.Model.ModelObject;
+using Part = Tekla.Structures.Model.Part;
 using TSMUI = Tekla.Structures.Model.UI;
 
-namespace DrawingTestApplication1
+namespace BasicViews
 {
     public partial class BasicViews : Form
     {
@@ -15,33 +17,34 @@ namespace DrawingTestApplication1
             InitializeComponent();
         }
 
-        private Model Model = new Model();
-        private DrawingHandler DrawingHandler = new DrawingHandler();
+        private readonly Model _model = new Model();
+        private readonly DrawingHandler _drawingHandler = new DrawingHandler();
 
         #region Coordinate system calculations
 
-        readonly Tekla.Structures.Geometry3d.Vector UpDirection = new Tekla.Structures.Geometry3d.Vector(0.0, 0.0, 1.0);
+        readonly Vector _upDirection = new Vector(0.0, 0.0, 1.0);
         /// <summary>
         /// Gets part default front view coordinate system
         /// Gets coordinate system as it is defined in the TS core for part/component basic views, which is different than in singlepart/assembly drawings.
         /// </summary>
         /// <param name="objectCoordinateSystem"></param>
         /// <returns></returns>
-        private Tekla.Structures.Geometry3d.CoordinateSystem GetBasicViewsCoordinateSystemForFrontView(Tekla.Structures.Geometry3d.CoordinateSystem objectCoordinateSystem)
+        private CoordinateSystem GetBasicViewsCoordinateSystemForFrontView(CoordinateSystem objectCoordinateSystem)
         {
-            Tekla.Structures.Geometry3d.CoordinateSystem result = new Tekla.Structures.Geometry3d.CoordinateSystem();
+            var result = new CoordinateSystem
+            {
+                Origin = new Point(objectCoordinateSystem.Origin),
+                AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
+                AxisY = new Vector(objectCoordinateSystem.AxisY)
+            };
 
-            result.Origin = new Tekla.Structures.Geometry3d.Point(objectCoordinateSystem.Origin);
-            result.AxisX = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisX) * -1.0;
-            result.AxisY = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisY);
+            var tempVector = (result.AxisX.Cross(_upDirection));
             
-            Tekla.Structures.Geometry3d.Vector tempVector = (result.AxisX.Cross(UpDirection));
-            
-            if(tempVector == new Tekla.Structures.Geometry3d.Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(UpDirection));
+            if(tempVector == new Vector())
+                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
 
-            result.AxisX = tempVector.Cross(UpDirection).GetNormal();
-            result.AxisY = UpDirection.GetNormal();
+            result.AxisX = tempVector.Cross(_upDirection).GetNormal();
+            result.AxisY = _upDirection.GetNormal();
 
             return result;
         }
@@ -52,20 +55,21 @@ namespace DrawingTestApplication1
         /// </summary>
         /// <param name="objectCoordinateSystem"></param>
         /// <returns></returns>
-        private Tekla.Structures.Geometry3d.CoordinateSystem GetBasicViewsCoordinateSystemForTopView(Tekla.Structures.Geometry3d.CoordinateSystem objectCoordinateSystem)
+        private CoordinateSystem GetBasicViewsCoordinateSystemForTopView(CoordinateSystem objectCoordinateSystem)
         {
-            Tekla.Structures.Geometry3d.CoordinateSystem result = new Tekla.Structures.Geometry3d.CoordinateSystem();
+            var result = new CoordinateSystem
+            {
+                Origin = new Point(objectCoordinateSystem.Origin),
+                AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
+                AxisY = new Vector(objectCoordinateSystem.AxisY)
+            };
 
-            result.Origin = new Tekla.Structures.Geometry3d.Point(objectCoordinateSystem.Origin);
-            result.AxisX = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisX) * -1.0;
-            result.AxisY = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisY);
-            
-            Tekla.Structures.Geometry3d.Vector tempVector = (result.AxisX.Cross(UpDirection));
+            var tempVector = (result.AxisX.Cross(_upDirection));
 
-            if(tempVector == new Tekla.Structures.Geometry3d.Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(UpDirection));
+            if(tempVector == new Vector())
+                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
 
-            result.AxisX = tempVector.Cross(UpDirection);
+            result.AxisX = tempVector.Cross(_upDirection);
             result.AxisY = tempVector;
 
             return result;
@@ -77,21 +81,22 @@ namespace DrawingTestApplication1
         /// </summary>
         /// <param name="objectCoordinateSystem"></param>
         /// <returns></returns>
-        private Tekla.Structures.Geometry3d.CoordinateSystem GetBasicViewsCoordinateSystemForEndView(Tekla.Structures.Geometry3d.CoordinateSystem objectCoordinateSystem)
+        private CoordinateSystem GetBasicViewsCoordinateSystemForEndView(CoordinateSystem objectCoordinateSystem)
         {
-            Tekla.Structures.Geometry3d.CoordinateSystem result = new Tekla.Structures.Geometry3d.CoordinateSystem();
+            var result = new CoordinateSystem
+            {
+                Origin = new Point(objectCoordinateSystem.Origin),
+                AxisX = new Vector(objectCoordinateSystem.AxisX) * -1.0,
+                AxisY = new Vector(objectCoordinateSystem.AxisY)
+            };
 
-            result.Origin = new Tekla.Structures.Geometry3d.Point(objectCoordinateSystem.Origin);
-            result.AxisX = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisX) * -1.0;
-            result.AxisY = new Tekla.Structures.Geometry3d.Vector(objectCoordinateSystem.AxisY);
-            
-            Tekla.Structures.Geometry3d.Vector tempVector = (result.AxisX.Cross(UpDirection));
+            var tempVector = (result.AxisX.Cross(_upDirection));
 
-            if(tempVector == new Tekla.Structures.Geometry3d.Vector())
-                tempVector = (objectCoordinateSystem.AxisY.Cross(UpDirection));
+            if(tempVector == new Vector())
+                tempVector = (objectCoordinateSystem.AxisY.Cross(_upDirection));
 
             result.AxisX = tempVector;
-            result.AxisY = UpDirection;
+            result.AxisY = _upDirection;
 
             return result;
         }
@@ -105,61 +110,65 @@ namespace DrawingTestApplication1
         /// <param name="e"></param>
         private void Create_click(object sender, EventArgs e)
         {
-            TransformationPlane current = Model.GetWorkPlaneHandler().GetCurrentTransformationPlane(); // We use global transformation
+            var current = _model.GetWorkPlaneHandler().GetCurrentTransformationPlane(); // We use global transformation
 
             try
             {
-                Model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane()); // We use global transformation
-                ModelObjectEnumerator selectedModelObjects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
+                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane()); // We use global transformation
+                var selectedModelObjects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
 
-                GADrawing MyDrawing = null;
+                GADrawing myDrawing = null;
 
                 while (selectedModelObjects.MoveNext())
                 {
-                    Tekla.Structures.Geometry3d.CoordinateSystem ModelObjectCoordSys;
+                    var drawingName = "Part basic views" + (selectedModelObjects.Current as Tekla.Structures.Model.ModelObject).Identifier;
 
-                    string ModelObjectName;
-                    string DrawingName = "Part basic views" + (selectedModelObjects.Current as Tekla.Structures.Model.ModelObject).Identifier;
+                    GetCoordinateSystemAndNameOfSelectedObject(selectedModelObjects, out var modelObjectCoordSys, out var modelObjectName);
 
-                    GetCoordinateSystemAndNameOfSelectedObject(selectedModelObjects, out ModelObjectCoordSys, out ModelObjectName);
-
-                    // Creates new empty genaral arrangement drawing
-                    MyDrawing = new GADrawing(DrawingName, "standard");
-                    MyDrawing.Insert();
+                    // Creates new empty general arrangement drawing
+                    myDrawing = new GADrawing(drawingName, "standard");
+                    myDrawing.Insert();
 
                     if (openDrawings.Checked)
-                        DrawingHandler.SetActiveDrawing(MyDrawing, true); // Open drawing in editor
+                        _drawingHandler.SetActiveDrawing(myDrawing, true); // Open drawing in editor
                     else
-                        DrawingHandler.SetActiveDrawing(MyDrawing, false); // Open drawing in invisible mode. When drawing is opened in invisible mode, it must always be saved and closed.
+                        _drawingHandler.SetActiveDrawing(myDrawing, false); // Open drawing in invisible mode. When drawing is opened in invisible mode, it must always be saved and closed.
 
                     // Handle different model object types
 
-                    ArrayList Parts = new ArrayList();
+                    var parts = new ArrayList();
 
-                    if (selectedModelObjects.Current is Tekla.Structures.Model.Part)
-                        Parts.Add(selectedModelObjects.Current.Identifier);
-                    else if (selectedModelObjects.Current is Tekla.Structures.Model.Assembly)
-                        Parts = GetAssemblyParts(selectedModelObjects.Current as Tekla.Structures.Model.Assembly);
-                    else if (selectedModelObjects.Current is Tekla.Structures.Model.BaseComponent)
-                        Parts = GetComponentParts(selectedModelObjects.Current as Tekla.Structures.Model.BaseComponent);
-                    else if (selectedModelObjects.Current is Tekla.Structures.Model.Task)
-                        Parts = GetTaskParts(selectedModelObjects.Current as Tekla.Structures.Model.Task);
+                    switch (selectedModelObjects.Current)
+                    {
+                        case Part _:
+                            parts.Add(selectedModelObjects.Current.Identifier);
+                            break;
+                        case Assembly assembly:
+                            parts = GetAssemblyParts(assembly);
+                            break;
+                        case BaseComponent component:
+                            parts = GetComponentParts(component);
+                            break;
+                        case Task task:
+                            parts = GetTaskParts(task);
+                            break;
+                    }
 
-                    CreateViews(ModelObjectCoordSys, ModelObjectName, MyDrawing, Parts);
+                    CreateViews(modelObjectCoordSys, modelObjectName, myDrawing, parts);
 
-                    MyDrawing.PlaceViews();
+                    myDrawing.PlaceViews();
 
-                    DrawingHandler.CloseActiveDrawing(true); // Save and close the active drawing
+                    _drawingHandler.CloseActiveDrawing(true); // Save and close the active drawing
                 }
 
-                if (MyDrawing != null && openDrawings.Checked)
-                    DrawingHandler.SetActiveDrawing(MyDrawing);
+                if (myDrawing != null && openDrawings.Checked)
+                    _drawingHandler.SetActiveDrawing(myDrawing);
 
-                Model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
+                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
             }
             catch (Exception exception)
             {
-                Model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
+                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
                 MessageBox.Show(exception.ToString());
             }
 
@@ -170,35 +179,33 @@ namespace DrawingTestApplication1
         /// Gets coordinate system of selected object
         /// Different model objects have different way of getting a proper coordinate system, eg. for Assemblies the main part coordinate system is used, and task has no coordinate system
         /// </summary>
-        /// <param name="SelectedModelObjects"></param>
-        /// <param name="ModelObjectCoordSys"></param>
-        /// <param name="ModelObjectName"></param>
-        private static void GetCoordinateSystemAndNameOfSelectedObject(ModelObjectEnumerator SelectedModelObjects, out Tekla.Structures.Geometry3d.CoordinateSystem ModelObjectCoordSys, out string ModelObjectName)
+        /// <param name="selectedModelObjects"></param>
+        /// <param name="modelObjectCoordSys"></param>
+        /// <param name="modelObjectName"></param>
+        private static void GetCoordinateSystemAndNameOfSelectedObject(ModelObjectEnumerator selectedModelObjects, out CoordinateSystem modelObjectCoordSys, out string modelObjectName)
         {
-            if(SelectedModelObjects.Current is Tekla.Structures.Model.Part)
+            switch (selectedModelObjects.Current)
             {
-                ModelObjectCoordSys = (SelectedModelObjects.Current as Tekla.Structures.Model.Part).GetCoordinateSystem();
-                ModelObjectName = (SelectedModelObjects.Current as Tekla.Structures.Model.Part).GetPartMark();
-            }
-            else if(SelectedModelObjects.Current is Tekla.Structures.Model.Assembly)
-            {
-                ModelObjectCoordSys = (SelectedModelObjects.Current as Tekla.Structures.Model.Assembly).GetMainPart().GetCoordinateSystem();
-                ModelObjectName = (SelectedModelObjects.Current as Tekla.Structures.Model.Assembly).AssemblyNumber.Prefix + (SelectedModelObjects.Current as Tekla.Structures.Model.Assembly).AssemblyNumber.StartNumber;
-            }
-            else if(SelectedModelObjects.Current is Tekla.Structures.Model.BaseComponent)
-            {
-                ModelObjectCoordSys = (SelectedModelObjects.Current as Tekla.Structures.Model.BaseComponent).GetCoordinateSystem();
-                ModelObjectName = (SelectedModelObjects.Current as Tekla.Structures.Model.BaseComponent).Name;
-            }
-            else if(SelectedModelObjects.Current is Tekla.Structures.Model.Task)
-            {
-                ModelObjectCoordSys = new Tekla.Structures.Geometry3d.CoordinateSystem();
-                ModelObjectName = (SelectedModelObjects.Current as Tekla.Structures.Model.Task).Name;
-            }
-            else
-            {
-                ModelObjectCoordSys = new Tekla.Structures.Geometry3d.CoordinateSystem();
-                ModelObjectName = "";
+                case Part part:
+                    modelObjectCoordSys = part.GetCoordinateSystem();
+                    modelObjectName = part.GetPartMark();
+                    break;
+                case Assembly assembly:
+                    modelObjectCoordSys = assembly.GetMainPart().GetCoordinateSystem();
+                    modelObjectName = assembly.AssemblyNumber.Prefix + assembly.AssemblyNumber.StartNumber;
+                    break;
+                case BaseComponent component:
+                    modelObjectCoordSys = component.GetCoordinateSystem();
+                    modelObjectName = component.Name;
+                    break;
+                case Task task:
+                    modelObjectCoordSys = new CoordinateSystem();
+                    modelObjectName = task.Name;
+                    break;
+                default:
+                    modelObjectCoordSys = new CoordinateSystem();
+                    modelObjectName = "";
+                    break;
             }
         }
 
@@ -210,15 +217,15 @@ namespace DrawingTestApplication1
         /// <returns></returns>
         private static ArrayList GetAssemblyParts(Assembly assembly)
         {
-            ArrayList Parts = new ArrayList();
-            IEnumerator AssemblyChildren = (assembly).GetSecondaries().GetEnumerator();
+            var parts = new ArrayList();
+            var assemblyChildren = (assembly).GetSecondaries().GetEnumerator();
 
-            Parts.Add((assembly).GetMainPart().Identifier);
+            parts.Add((assembly).GetMainPart().Identifier);
 
-            while(AssemblyChildren.MoveNext())
-                Parts.Add((AssemblyChildren.Current as Tekla.Structures.Model.ModelObject).Identifier);
+            while(assemblyChildren.MoveNext())
+                parts.Add(((ModelObject)assemblyChildren.Current)?.Identifier);
             
-            return Parts;
+            return parts;
         }
 
         /// <summary>
@@ -228,13 +235,13 @@ namespace DrawingTestApplication1
         /// <returns></returns>
         private static ArrayList GetComponentParts(BaseComponent component)
         {
-            ArrayList Parts = new ArrayList();
+            var parts = new ArrayList();
             IEnumerator myChildren = component.GetChildren();
 
             while(myChildren.MoveNext())
-                Parts.Add((myChildren.Current as Tekla.Structures.Model.ModelObject).Identifier);
+                parts.Add(((ModelObject)myChildren.Current)?.Identifier);
 
-            return Parts;
+            return parts;
         }
 
         /// <summary>
@@ -244,19 +251,19 @@ namespace DrawingTestApplication1
         /// <returns></returns>
         private static ArrayList GetTaskParts(Task task)
         {
-            ArrayList Parts = new ArrayList();
+            var parts = new ArrayList();
 
-            ModelObjectEnumerator myMembers = task.GetChildren();
+            var myMembers = task.GetChildren();
             
             while(myMembers.MoveNext())
             {
                 if(myMembers.Current is Tekla.Structures.Model.Task)
-                    Parts.AddRange(GetTaskParts(myMembers.Current as Tekla.Structures.Model.Task));
+                    parts.AddRange(GetTaskParts(myMembers.Current as Tekla.Structures.Model.Task));
                 else if(myMembers.Current is Tekla.Structures.Model.Part)
-                    Parts.Add(myMembers.Current.Identifier);
+                    parts.Add(myMembers.Current.Identifier);
             }
 
-            return Parts;
+            return parts;
         }
 
         #endregion
@@ -264,69 +271,69 @@ namespace DrawingTestApplication1
         /// <summary>
         /// Create all basic views
         /// </summary>
-        /// <param name="ModelObjectCoordSys"></param>
-        /// <param name="ModelObjectName"></param>
-        /// <param name="MyDrawing"></param>
-        /// <param name="Parts"></param>
-        private void CreateViews(Tekla.Structures.Geometry3d.CoordinateSystem ModelObjectCoordSys, string ModelObjectName, GADrawing MyDrawing, ArrayList Parts)
+        /// <param name="modelObjectCoordSys"></param>
+        /// <param name="modelObjectName"></param>
+        /// <param name="myDrawing"></param>
+        /// <param name="parts"></param>
+        private void CreateViews(CoordinateSystem modelObjectCoordSys, string modelObjectName, GADrawing myDrawing, ArrayList parts)
         {
             if(createFrontView.Checked)
-                AddView("Front view of " + ModelObjectName, MyDrawing, Parts, GetBasicViewsCoordinateSystemForFrontView(ModelObjectCoordSys));
+                AddView("Front view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
 
             if(createTopView.Checked)
-                AddView("Top view of " + ModelObjectName, MyDrawing, Parts, GetBasicViewsCoordinateSystemForTopView(ModelObjectCoordSys));
+                AddView("Top view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForTopView(modelObjectCoordSys));
 
             if(createEndView.Checked)
-                AddView("End view of " + ModelObjectName, MyDrawing, Parts, GetBasicViewsCoordinateSystemForEndView(ModelObjectCoordSys));
+                AddView("End view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForEndView(modelObjectCoordSys));
 
             if(create3dView.Checked)
-                AddRotatedView("3d view of " + ModelObjectName, MyDrawing, Parts, GetBasicViewsCoordinateSystemForFrontView(ModelObjectCoordSys));
+                AddRotatedView("3d view of " + modelObjectName, myDrawing, parts, GetBasicViewsCoordinateSystemForFrontView(modelObjectCoordSys));
         }     
 
         /// <summary>
         /// Add one basic view
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="MyDrawing"></param>
-        /// <param name="Parts"></param>
-        /// <param name="CoordinateSystem"></param>
-        private void AddView(String Name, Drawing MyDrawing, ArrayList Parts, Tekla.Structures.Geometry3d.CoordinateSystem CoordinateSystem)
+        /// <param name="name"></param>
+        /// <param name="myDrawing"></param>
+        /// <param name="parts"></param>
+        /// <param name="coordinateSystem"></param>
+        private void AddView(String name, Drawing myDrawing, ArrayList parts, CoordinateSystem coordinateSystem)
         {
-            Tekla.Structures.Drawing.View MyView = new Tekla.Structures.Drawing.View(MyDrawing.GetSheet(),
-                                                                                     CoordinateSystem,
-                                                                                     CoordinateSystem,
-                                                                                     Parts);
+            var myView = new Tekla.Structures.Drawing.View(myDrawing.GetSheet(),
+                                                                                     coordinateSystem,
+                                                                                     coordinateSystem,
+                                                                                     parts);
 
-            MyView.Name = Name;
-            MyView.Insert();
+            myView.Name = name;
+            myView.Insert();
        }
    
         /// <summary>
         /// Add rotated view
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="MyDrawing"></param>
-        /// <param name="Parts"></param>
-        /// <param name="CoordinateSystem"></param>
-        private void AddRotatedView(String Name, Drawing MyDrawing, ArrayList Parts, Tekla.Structures.Geometry3d.CoordinateSystem CoordinateSystem)
+        /// <param name="name"></param>
+        /// <param name="myDrawing"></param>
+        /// <param name="parts"></param>
+        /// <param name="coordinateSystem"></param>
+        private void AddRotatedView(String name, Drawing myDrawing, ArrayList parts, CoordinateSystem coordinateSystem)
         {
-            Tekla.Structures.Geometry3d.CoordinateSystem displayCoordinateSystem = new Tekla.Structures.Geometry3d.CoordinateSystem();
+            var displayCoordinateSystem = new CoordinateSystem();
 
-            Tekla.Structures.Geometry3d.Matrix RotationAroundX = Tekla.Structures.Geometry3d.MatrixFactory.Rotate(20.0 * Math.PI * 2.0 / 360.0, CoordinateSystem.AxisX);
-            Tekla.Structures.Geometry3d.Matrix RotationAroundZ = Tekla.Structures.Geometry3d.MatrixFactory.Rotate(30.0 * Math.PI * 2.0 / 360.0, CoordinateSystem.AxisY);
+            var rotationAroundX = MatrixFactory.Rotate(20.0 * Math.PI * 2.0 / 360.0, coordinateSystem.AxisX);
+            var rotationAroundZ = MatrixFactory.Rotate(30.0 * Math.PI * 2.0 / 360.0, coordinateSystem.AxisY);
 
-            Tekla.Structures.Geometry3d.Matrix Rotation = RotationAroundX * RotationAroundZ;
+            var rotation = rotationAroundX * rotationAroundZ;
 
-            displayCoordinateSystem.AxisX = new Tekla.Structures.Geometry3d.Vector(Rotation.Transform(new Tekla.Structures.Geometry3d.Point(CoordinateSystem.AxisX)));
-            displayCoordinateSystem.AxisY = new Tekla.Structures.Geometry3d.Vector(Rotation.Transform(new Tekla.Structures.Geometry3d.Point(CoordinateSystem.AxisY)));
+            displayCoordinateSystem.AxisX = new Vector(rotation.Transform(new Point(coordinateSystem.AxisX)));
+            displayCoordinateSystem.AxisY = new Vector(rotation.Transform(new Point(coordinateSystem.AxisY)));
             
-            Tekla.Structures.Drawing.View FrontView = new Tekla.Structures.Drawing.View(MyDrawing.GetSheet(),
-                                                                                        CoordinateSystem,
+            var frontView = new Tekla.Structures.Drawing.View(myDrawing.GetSheet(),
+                                                                                        coordinateSystem,
                                                                                         displayCoordinateSystem,
-                                                                                        Parts);
+                                                                                        parts);
            
-            FrontView.Name = Name;
-            FrontView.Insert();
+            frontView.Name = name;
+            frontView.Insert();
        }
    }
 }
