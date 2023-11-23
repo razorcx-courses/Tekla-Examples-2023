@@ -88,12 +88,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppLogic.cs" />
     <Compile Include="BasicViews.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="BasicViews.Designer.cs">
       <DependentUpon>BasicViews.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="BasicViews.resx">
