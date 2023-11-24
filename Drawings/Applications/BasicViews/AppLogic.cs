@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Tekla.Structures.Drawing;
 using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
+using ModelObject = Tekla.Structures.Model.ModelObject;
 using Part = Tekla.Structures.Model.Part;
 using TSMUI = Tekla.Structures.Model.UI;
 
@@ -29,9 +30,12 @@ namespace BasicViews
 
                 while (selectedModelObjects.MoveNext())
                 {
-                    var drawingName = "Part basic views" + (selectedModelObjects.Current as Tekla.Structures.Model.ModelObject).Identifier;
+                    var currentObject = selectedModelObjects.Current;
 
-                    GetCoordinateSystemAndNameOfSelectedObject(selectedModelObjects, out var modelObjectCoordSys, out var modelObjectName);
+                    var drawingName = "Part basic views" + currentObject.Identifier;
+
+                    var modelObjectCoordSys = GetCoordinateSystemOfSelectedObject(currentObject);
+                    var modelObjectName = GetNameOfSelectedObject(currentObject);
 
                     // Creates new empty general arrangement drawing
                     myDrawing = new GADrawing(drawingName, "standard");
@@ -73,31 +77,56 @@ namespace BasicViews
         /// <param name="selectedModelObjects"></param>
         /// <param name="modelObjectCoordSys"></param>
         /// <param name="modelObjectName"></param>
-        private static void GetCoordinateSystemAndNameOfSelectedObject(ModelObjectEnumerator selectedModelObjects, out CoordinateSystem modelObjectCoordSys, out string modelObjectName)
+        private static CoordinateSystem GetCoordinateSystemOfSelectedObject(ModelObject selectedModelObject)
         {
-            switch (selectedModelObjects.Current)
+            CoordinateSystem modelObjectCoordSys;
+
+            switch (selectedModelObject)
             {
                 case Part part:
                     modelObjectCoordSys = part.GetCoordinateSystem();
-                    modelObjectName = part.GetPartMark();
                     break;
                 case Assembly assembly:
                     modelObjectCoordSys = assembly.GetMainPart().GetCoordinateSystem();
-                    modelObjectName = assembly.AssemblyNumber.Prefix + assembly.AssemblyNumber.StartNumber;
                     break;
                 case BaseComponent component:
                     modelObjectCoordSys = component.GetCoordinateSystem();
-                    modelObjectName = component.Name;
                     break;
                 case Task task:
                     modelObjectCoordSys = new CoordinateSystem();
-                    modelObjectName = task.Name;
                     break;
                 default:
                     modelObjectCoordSys = new CoordinateSystem();
+                    break;
+            }
+
+            return modelObjectCoordSys;
+        }
+
+        private static string GetNameOfSelectedObject(ModelObject selectedModelObject)
+        {
+            string modelObjectName;
+
+            switch (selectedModelObject)
+            {
+                case Part part:
+                    modelObjectName = part.GetPartMark();
+                    break;
+                case Assembly assembly:
+                    modelObjectName = assembly.AssemblyNumber.Prefix + assembly.AssemblyNumber.StartNumber;
+                    break;
+                case BaseComponent component:
+                    modelObjectName = component.Name;
+                    break;
+                case Task task:
+                    modelObjectName = task.Name;
+                    break;
+                default:
                     modelObjectName = "";
                     break;
             }
+
+            return modelObjectName;
         }
     }
 }
