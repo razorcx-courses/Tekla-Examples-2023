@@ -89,6 +89,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionSpliceDefaults.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -96,6 +98,7 @@
     </Compile>
     <Compile Include="SpliceConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpliceConnectionBuilder.cs" />
     <Compile Include="SpliceConnectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
