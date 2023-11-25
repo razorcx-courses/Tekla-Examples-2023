@@ -4,36 +4,13 @@ using Tekla.Structures;
 using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Plugins;
 using Tekla.Structures.Model;
+using TSMUI = Tekla.Structures.Model.UI;
 
 namespace SpliceConn
 {
-    public class StructuresData
-    {
-        [StructuresField("PlateLength")]
-        public double PlateLength;
-        [StructuresField("BoltStandard")]
-        public string BoltStandard;
-        [StructuresField("zsuunta")] // It is mandatory to use type integer for this attribute
-        public int UpDirection;
-        [StructuresField("zang1")] // It is mandatory to use type double for this attribute
-        public double RotationAngleY;
-        [StructuresField("zang2")] // It is mandatory to use type double for this attribute
-        public double RotationAngleX;
-        [StructuresField("OBJECT_LOCKED")] // It is mandatory to use type integer for this attribute
-        public int Locked;
-        [StructuresField("group_no")] // It is mandatory to use type integer for this attribute
-        public int Class;
-        [StructuresField("joint_code")] // It is mandatory to use type string for this attribute
-        public string ConnectionCode;
-        [StructuresField("ad_root")] // It is mandatory to use type string for this attribute
-        public string AutoDefaults;
-        [StructuresField("ac_root")] // It is mandatory to use type string for this attribute
-        public string AutoConnection;
-    }
-
     // If the plug-in is inherited from ConnectionPluginBase, the dialog class name must be the same as plug-in name
-    [Plugin("SpliceConnection")] //Name of the connetion in the catalog
-    [PluginUserInterface("SpliceConnection")]
+    [Plugin("SpliceConnection")] //Name of the connection in the catalog
+    [PluginUserInterface("SpliceConnectionForm")]
     [SecondaryType(ConnectionBase.SecondaryType.SECONDARYTYPE_ONE)]
     [AutoDirectionType(AutoDirectionTypeEnum.AUTODIR_BASIC)]
     [PositionType(PositionTypeEnum.COLLISION_PLANE)]
@@ -44,16 +21,16 @@ namespace SpliceConn
         private readonly StructuresData _data;
         private const double GAP = 10.0;
         private const double EPSILON = 0.001;
-        private double _PlateLength;
-        private string _BoltStandard = string.Empty;
-        private int _UpDirection = new int();
-        private double _RotationAngleY;
-        private double _RotationAngleX;
-        private int _Locked = new int();
-        private int _Class = new int();
-        private string _ConnectionCode = string.Empty;
-        private string _AutoDefaults = string.Empty;
-        private string _AutoConnection = string.Empty;
+        private double _plateLength;
+        private string _boltStandard = string.Empty;
+        private int _upDirection = new int();
+        private double _rotationAngleY;
+        private double _rotationAngleX;
+        private int _locked = new int();
+        private int _class = new int();
+        private string _connectionCode = string.Empty;
+        private string _autoDefaults = string.Empty;
+        private string _autoConnection = string.Empty;
         #endregion
 
         #region Constructor
@@ -67,97 +44,110 @@ namespace SpliceConn
         #region Overriden methods
         public override bool Run()
         {
-            bool Result = false;
             try
             {
                 GetValuesFromDialog();
 
+
+                //for debugging as windows forms app
+                var objects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
+
+                objects.MoveNext();
+                var primary = objects.Current as Beam;
+                objects.MoveNext();
+                var secondary = objects.Current as Beam;
+                var primaryBeam = primary;
+                var secondaryBeam = secondary;
+
+
+                //for connection plugin
                 //Get primary and secondary
-                Beam PrimaryBeam = _model.SelectModelObject(Primary) as Beam;
-                Beam SecondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
-                if(PrimaryBeam != null && SecondaryBeam != null)
-                {
-                    string PrimaryProfileType = "";
-                    string SecondaryProfileType = "";
+                //if (Primary == null || Secondaries.Count < 1) return false;
+                //Beam PrimaryBeam = _model.SelectModelObject(Primary) as Beam;
+                //Beam SecondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
 
-                    PrimaryBeam.GetReportProperty("PROFILE_TYPE", ref PrimaryProfileType);
-                    SecondaryBeam.GetReportProperty("PROFILE_TYPE", ref SecondaryProfileType);
+                if (primaryBeam == null || secondaryBeam == null) return false;
 
-                    if(PrimaryBeam.Profile.ProfileString == SecondaryBeam.Profile.ProfileString &&
-                       PrimaryProfileType == SecondaryProfileType)
-                    {
-                        if(CheckIfBeamsAreAligned(PrimaryBeam, SecondaryBeam))
-                        {
-                            if(CreateSpliceConnection(PrimaryBeam, SecondaryBeam))
-                                Result = true;
-                        }
-                    }
-                }
+                var primaryProfileType = "";
+                var secondaryProfileType = "";
+
+                primaryBeam.GetReportProperty("PROFILE_TYPE", ref primaryProfileType);
+                secondaryBeam.GetReportProperty("PROFILE_TYPE", ref secondaryProfileType);
+
+                if (primaryBeam.Profile.ProfileString != secondaryBeam.Profile.ProfileString ||
+                    primaryProfileType != secondaryProfileType) return false;
+
+                if (!CheckIfBeamsAreAligned(primaryBeam, secondaryBeam)) return false;
+
+                return CreateSpliceConnection(primaryBeam, secondaryBeam, _model, _plateLength, _boltStandard);
             }
 
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 MessageBox.Show(exc.ToString());
+                return false;
             }
 
-            return Result;
+            finally
+            {
+                _model.CommitChanges();
+            }
         }
         #endregion
 
         #region Private methods
-        private static bool CheckIfBeamsAreAligned(Beam PrimaryBeam, Beam SecondaryBeam)
+        private static bool CheckIfBeamsAreAligned(Beam primaryBeam, Beam secondaryBeam)
         {
-            bool result = false;
+            if (primaryBeam == null || secondaryBeam == null) return false;
 
-            if(PrimaryBeam != null && SecondaryBeam != null)
-            {
-                Line primaryLine = new Line(PrimaryBeam.StartPoint, PrimaryBeam.EndPoint);
-                Line secondaryLine = new Line(SecondaryBeam.StartPoint, SecondaryBeam.EndPoint);
-                if(Parallel.LineToLine(primaryLine, secondaryLine))
-                    result = true;
-            }
+            var primaryLine = new Line(primaryBeam.StartPoint, primaryBeam.EndPoint);
+            var secondaryLine = new Line(secondaryBeam.StartPoint, secondaryBeam.EndPoint);
 
-            return result;
+            return Parallel.LineToLine(primaryLine, secondaryLine);
         }
 
-        private bool CreateSpliceConnection(Beam PrimaryBeam, Beam SecondaryBeam)
+        private static bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam, Model model, 
+            double plateLength, string boltStandard)
         {
-            bool Result = false;
-            TransformationPlane originalTransformationPlane = _model.GetWorkPlaneHandler().GetCurrentTransformationPlane();
-            double webThickness = 0.0;
-            double beamHeight = 0.0;
-            double flangeHeight = 0.0;
-            double innerRoundingRadius = 0.0;
-            const double innerMargin = 5.0;
+            var originalTransformationPlane = model.GetWorkPlaneHandler().GetCurrentTransformationPlane();
 
-            CoordinateSystem coordSys = PrimaryBeam.GetCoordinateSystem();
-
-            if(Distance.PointToPoint(PrimaryBeam.EndPoint, SecondaryBeam.StartPoint) < EPSILON ||
-               Distance.PointToPoint(PrimaryBeam.EndPoint, SecondaryBeam.EndPoint) < EPSILON)
+            try
             {
-                coordSys.Origin.Translate(coordSys.AxisX.X, coordSys.AxisX.Y, coordSys.AxisX.Z);
-                coordSys.AxisX = -1 * coordSys.AxisX;
-            }
+                var webThickness = 0.0;
+                var beamHeight = 0.0;
+                var flangeHeight = 0.0;
+                var innerRoundingRadius = 0.0;
+                const double innerMargin = 5.0;
 
-            // First get the essential dimensions from the beam
-            if(CreateGapBetweenBeams(PrimaryBeam, SecondaryBeam) &&
-                SecondaryBeam.GetReportProperty("PROFILE.WEB_THICKNESS", ref webThickness) &&
-                SecondaryBeam.GetReportProperty("PROFILE.HEIGHT", ref beamHeight) &&
-                SecondaryBeam.GetReportProperty("PROFILE.FLANGE_THICKNESS", ref flangeHeight))
-            {
+                // First get the essential dimensions from the beam
+                var canCreateGaps = CreateGapBetweenBeams(primaryBeam, secondaryBeam, GAP);
+                var canGetProperties = secondaryBeam.GetReportProperty("PROFILE.WEB_THICKNESS", ref webThickness) &&
+                                       secondaryBeam.GetReportProperty("PROFILE.HEIGHT", ref beamHeight) &&
+                                       secondaryBeam.GetReportProperty("PROFILE.FLANGE_THICKNESS", ref flangeHeight);
+
+                if (!canCreateGaps || !canGetProperties) return false;
+
+                var coordSys = primaryBeam.GetCoordinateSystem();
+
+                if (Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.StartPoint) < EPSILON ||
+                    Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.EndPoint) < EPSILON)
+                {
+                    coordSys.Origin.Translate(coordSys.AxisX.X, coordSys.AxisX.Y, coordSys.AxisX.Z);
+                    coordSys.AxisX = -1 * coordSys.AxisX;
+                }
                 //Creates plates on both sides of the beam.
 
                 #region Create the Plates
 
-                Beam plate1 = new Beam();
-                Beam plate2 = new Beam();
+                var plate1 = new Beam();
+                var plate2 = new Beam();
 
                 // And then the optionals if they exist
-                SecondaryBeam.GetReportProperty("PROFILE.ROUNDING_RADIUS_1", ref innerRoundingRadius);
-                double edgeDistance = (flangeHeight + innerRoundingRadius + innerMargin);
-                double plateHeight = beamHeight - 2 * edgeDistance;
+                secondaryBeam.GetReportProperty("PROFILE.ROUNDING_RADIUS_1", ref innerRoundingRadius);
+                var edgeDistance = (flangeHeight + innerRoundingRadius + innerMargin);
+                var plateHeight = beamHeight - 2 * edgeDistance;
 
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(coordSys));
+                model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(coordSys));
 
                 plate1.Position.Depth = plate2.Position.Depth = Position.DepthEnum.MIDDLE;
                 plate1.Position.Rotation = plate2.Position.Rotation = Position.RotationEnum.FRONT;
@@ -165,11 +155,12 @@ namespace SpliceConn
 
                 plate1.StartPoint = new Point(-GAP, (-beamHeight / 2.0) + edgeDistance, webThickness);
                 plate1.EndPoint = new Point(plate1.StartPoint.X, (-beamHeight / 2.0) + beamHeight - edgeDistance,
-                                            webThickness);
+                    webThickness);
                 plate2.StartPoint = new Point(plate1.StartPoint.X, plate1.StartPoint.Y, -webThickness);
                 plate2.EndPoint = new Point(plate1.EndPoint.X, plate1.EndPoint.Y, -webThickness);
 
-                plate1.Profile.ProfileString = plate2.Profile.ProfileString = "PL" + (int)webThickness + "*" + (int)_PlateLength;
+                plate1.Profile.ProfileString =
+                    plate2.Profile.ProfileString = "PL" + (int)webThickness + "*" + (int)plateLength;
                 plate1.Finish = plate2.Finish = "PAINT";
 
                 // With this we help internal code to assign same ID to plates when plugin is modified.
@@ -182,177 +173,172 @@ namespace SpliceConn
 
                 #endregion
 
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(plate1.GetCoordinateSystem()));
+                model.GetWorkPlaneHandler()
+                    .SetCurrentTransformationPlane(new TransformationPlane(plate1.GetCoordinateSystem()));
 
                 //Creates two boltArrays to connect the plates
-                if(CreateBoltArray(PrimaryBeam, plate1, plate2, plateHeight, true) &&
-                   CreateBoltArray(SecondaryBeam, plate1, plate2, plateHeight, false))
-                    Result = true;
-
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(originalTransformationPlane);
+                return CreateBoltArray(primaryBeam, plate1, plate2, plateHeight, true, plateLength, boltStandard) &&
+                       CreateBoltArray(secondaryBeam, plate1, plate2, plateHeight, false, plateLength, boltStandard);
             }
-            return Result;
+            catch (Exception e)
+            {
+                return false;
+            }
+            finally
+            {
+                model.GetWorkPlaneHandler().SetCurrentTransformationPlane(originalTransformationPlane);
+            }
         }
 
-        private bool CreateBoltArray(Beam beam, Beam plate1, Beam plate2, double plateHeight, bool Primary)
+        private static bool CreateBoltArray(Beam beam, Beam plate1, Beam plate2, double plateHeight, 
+            bool primary, double plateLength, string boltStandard)
         {
-            bool result = false;
-            
-            BoltArray B = new BoltArray();
-
-            B.PartToBoltTo = plate1;
-            B.PartToBeBolted = beam;
-            B.AddOtherPartToBolt(plate2);
-
-            if(Primary)
+            var boltArray = new BoltArray
             {
-                B.FirstPosition = new Point(plateHeight / 2.0, _PlateLength / 2.0, 0.0);
-                B.SecondPosition = new Point(plateHeight / 2.0, -_PlateLength / 2.0, 0.0);
+                PartToBoltTo = plate1,
+                PartToBeBolted = beam
+            };
+
+            boltArray.AddOtherPartToBolt(plate2);
+
+            if (primary)
+            {
+                boltArray.FirstPosition = new Point(plateHeight / 2.0, plateLength / 2.0, 0.0);
+                boltArray.SecondPosition = new Point(plateHeight / 2.0, -plateLength / 2.0, 0.0);
             }
             else
             {
-                B.FirstPosition = new Point(plateHeight / 2.0, -_PlateLength / 2.0, 0.0);
-                B.SecondPosition = new Point(plateHeight / 2.0, _PlateLength / 2.0, 0.0);
+                boltArray.FirstPosition = new Point(plateHeight / 2.0, -plateLength / 2.0, 0.0);
+                boltArray.SecondPosition = new Point(plateHeight / 2.0, plateLength / 2.0, 0.0);
             }
 
-            B.StartPointOffset.Dx = B.EndPointOffset.Dx = _PlateLength - 75;
-            B.StartPointOffset.Dy = B.EndPointOffset.Dy = 0;
-            B.StartPointOffset.Dz = B.EndPointOffset.Dz = 0;
+            boltArray.StartPointOffset.Dx = boltArray.EndPointOffset.Dx = plateLength - 75;
+            boltArray.StartPointOffset.Dy = boltArray.EndPointOffset.Dy = 0;
+            boltArray.StartPointOffset.Dz = boltArray.EndPointOffset.Dz = 0;
 
-            B.BoltSize = 20;
-            B.Tolerance = 2.00;
-            B.BoltStandard = _BoltStandard;
-            B.BoltType = BoltGroup.BoltTypeEnum.BOLT_TYPE_SITE;
-            B.CutLength = 105;
+            boltArray.BoltSize = 20;
+            boltArray.Tolerance = 2.00;
+            boltArray.BoltStandard = boltStandard;
+            boltArray.BoltType = BoltGroup.BoltTypeEnum.BOLT_TYPE_SITE;
+            boltArray.CutLength = 105;
 
-            B.Length = 60;
-            B.ExtraLength = 0;
-            B.ThreadInMaterial = BoltGroup.BoltThreadInMaterialEnum.THREAD_IN_MATERIAL_YES;
+            boltArray.Length = 60;
+            boltArray.ExtraLength = 0;
+            boltArray.ThreadInMaterial = BoltGroup.BoltThreadInMaterialEnum.THREAD_IN_MATERIAL_YES;
 
-            B.Position.Depth = Position.DepthEnum.MIDDLE;
-            B.Position.Plane = Position.PlaneEnum.MIDDLE;
-            B.Position.Rotation = Position.RotationEnum.FRONT;
+            boltArray.Position.Depth = Position.DepthEnum.MIDDLE;
+            boltArray.Position.Plane = Position.PlaneEnum.MIDDLE;
+            boltArray.Position.Rotation = Position.RotationEnum.FRONT;
 
-            B.Bolt = true;
-            B.Washer1 = false;
-            B.Washer2 = B.Washer3 = true;
-            B.Nut1 = true;
-            B.Nut2 = false;
-            B.Hole1 = B.Hole2 = B.Hole3 = B.Hole4 = B.Hole5 = false;
+            boltArray.Bolt = true;
+            boltArray.Washer1 = false;
+            boltArray.Washer2 = boltArray.Washer3 = true;
+            boltArray.Nut1 = true;
+            boltArray.Nut2 = false;
+            boltArray.Hole1 = boltArray.Hole2 = boltArray.Hole3 = boltArray.Hole4 = boltArray.Hole5 = false;
 
-            B.AddBoltDistX(0.0);
-            B.AddBoltDistY(plateHeight - 150.0);
+            boltArray.AddBoltDistX(0.0);
+            boltArray.AddBoltDistY(plateHeight - 150.0);
 
-            if(B.Insert())
-                result = true;
-
-            return result;
+            return boltArray.Insert();
         }
 
         //Creates a gap between the beams
-        private static bool CreateGapBetweenBeams(Beam PrimaryBeam, Beam SecondaryBeam)
+        private static bool CreateGapBetweenBeams(Beam primaryBeam, Beam secondaryBeam, double gap)
         {
-            bool result = false;
+            if (primaryBeam == null || secondaryBeam == null) return false;
 
-            if(PrimaryBeam != null && SecondaryBeam != null)
+            //Get vectors defined by the beams, to move their extremes along them when creating the gaps
+            var primaryBeamVector = new Vector(primaryBeam.EndPoint.X - primaryBeam.StartPoint.X,
+                                                  primaryBeam.EndPoint.Y - primaryBeam.StartPoint.Y,
+                                                  primaryBeam.EndPoint.Z - primaryBeam.StartPoint.Z);
+            primaryBeamVector.Normalize(gap);
+
+            var secondaryBeamVector = new Vector(secondaryBeam.EndPoint.X - secondaryBeam.StartPoint.X,
+                                                    secondaryBeam.EndPoint.Y - secondaryBeam.StartPoint.Y,
+                                                    secondaryBeam.EndPoint.Z - secondaryBeam.StartPoint.Z);
+            secondaryBeamVector.Normalize(gap);
+
+            Point primaryBeamEdge = null;
+            Point secondaryBeamEdge = null;
+
+            if (primaryBeam.StartPoint == secondaryBeam.StartPoint)
             {
-                //Get vectors defined by the beams, to move their extremes along them when creating the gaps
-                Vector primaryBeamVector = new Vector(PrimaryBeam.EndPoint.X - PrimaryBeam.StartPoint.X,
-                                                      PrimaryBeam.EndPoint.Y - PrimaryBeam.StartPoint.Y,
-                                                      PrimaryBeam.EndPoint.Z - PrimaryBeam.StartPoint.Z);
-                primaryBeamVector.Normalize(GAP);
-                Vector secondaryBeamVector = new Vector(SecondaryBeam.EndPoint.X - SecondaryBeam.StartPoint.X,
-                                                        SecondaryBeam.EndPoint.Y - SecondaryBeam.StartPoint.Y,
-                                                        SecondaryBeam.EndPoint.Z - SecondaryBeam.StartPoint.Z);
-                secondaryBeamVector.Normalize(GAP);
-
-                Point PrimaryBeamEdge;
-                Point SecondaryBeamEdge;
-            
-                if(PrimaryBeam.StartPoint == SecondaryBeam.StartPoint)
-                {
-                    PrimaryBeamEdge = PrimaryBeam.StartPoint;
-                    SecondaryBeamEdge = SecondaryBeam.StartPoint;
-
-                    if(CreateFittings(PrimaryBeam, SecondaryBeam, PrimaryBeamEdge, SecondaryBeamEdge,
-                                      primaryBeamVector, secondaryBeamVector))
-                        result = true;
-                }
-                else if(PrimaryBeam.EndPoint == SecondaryBeam.StartPoint)
-                {
-                    ChangeVectorDirection(primaryBeamVector);
-
-                    PrimaryBeamEdge = PrimaryBeam.EndPoint;
-                    SecondaryBeamEdge = SecondaryBeam.StartPoint;
-
-                    if(CreateFittings(PrimaryBeam, SecondaryBeam, PrimaryBeamEdge, SecondaryBeamEdge,
-                                      primaryBeamVector, secondaryBeamVector))
-                        result = true;
-                }
-                else if(PrimaryBeam.StartPoint == SecondaryBeam.EndPoint)
-                {
-                    ChangeVectorDirection(secondaryBeamVector);
-
-                    PrimaryBeamEdge = PrimaryBeam.StartPoint;
-                    SecondaryBeamEdge = SecondaryBeam.EndPoint;
-
-                    if(CreateFittings(PrimaryBeam, SecondaryBeam, PrimaryBeamEdge, SecondaryBeamEdge,
-                                      primaryBeamVector, secondaryBeamVector))
-                        result = true;
-                }
-                else if(PrimaryBeam.EndPoint == SecondaryBeam.EndPoint)
-                {
-                    ChangeVectorDirection(primaryBeamVector);
-                    ChangeVectorDirection(secondaryBeamVector);
-
-                    PrimaryBeamEdge = PrimaryBeam.EndPoint;
-                    SecondaryBeamEdge = SecondaryBeam.EndPoint;
-
-                    if(CreateFittings(PrimaryBeam, SecondaryBeam, PrimaryBeamEdge, SecondaryBeamEdge,
-                                      primaryBeamVector, secondaryBeamVector))
-                        result = true;
-                }
+                primaryBeamEdge = primaryBeam.StartPoint;
+                secondaryBeamEdge = secondaryBeam.StartPoint;
             }
 
-            return result;
+            if (primaryBeam.EndPoint == secondaryBeam.StartPoint)
+            {
+                ChangeVectorDirection(primaryBeamVector);
+
+                primaryBeamEdge = primaryBeam.EndPoint;
+                secondaryBeamEdge = secondaryBeam.StartPoint;
+            }
+
+            if (primaryBeam.StartPoint == secondaryBeam.EndPoint)
+            {
+                ChangeVectorDirection(secondaryBeamVector);
+
+                primaryBeamEdge = primaryBeam.StartPoint;
+                secondaryBeamEdge = secondaryBeam.EndPoint;
+            }
+
+            if (primaryBeam.EndPoint == secondaryBeam.EndPoint)
+            {
+                ChangeVectorDirection(primaryBeamVector);
+                ChangeVectorDirection(secondaryBeamVector);
+
+                primaryBeamEdge = primaryBeam.EndPoint;
+                secondaryBeamEdge = secondaryBeam.EndPoint;
+            }
+
+            return CreateFittings(primaryBeam, secondaryBeam, primaryBeamEdge, secondaryBeamEdge,
+                primaryBeamVector, secondaryBeamVector);
+
         }
 
         //Creates the fittings used to create the gap between the beams
-        private static bool CreateFittings(Beam PrimaryBeam, Beam SecondaryBeam, Point PrimaryBeamEdge, Point SecondaryBeamEdge,
+        private static bool CreateFittings(Beam primaryBeam, Beam secondaryBeam, Point primaryBeamEdge, Point secondaryBeamEdge,
                                            Vector primaryBeamVector, Vector secondaryBeamVector)
         {
-            bool Result = false;
-            Fitting fitPrimary = new Fitting();
-            Fitting fitSecondary = new Fitting();
-            CoordinateSystem PrimaryCoordinateSystem = PrimaryBeam.GetCoordinateSystem();
-            CoordinateSystem SecondaryCoordinateSystem = PrimaryBeam.GetCoordinateSystem();
+            var primaryCoordinateSystem = primaryBeam.GetCoordinateSystem();
+            var secondaryCoordinateSystem = primaryBeam.GetCoordinateSystem();
 
-            PrimaryBeamEdge.Translate(primaryBeamVector.X, primaryBeamVector.Y, primaryBeamVector.Z);
-            SecondaryBeamEdge.Translate(secondaryBeamVector.X, secondaryBeamVector.Y, secondaryBeamVector.Z);
+            primaryBeamEdge.Translate(primaryBeamVector.X, primaryBeamVector.Y, primaryBeamVector.Z);
+            secondaryBeamEdge.Translate(secondaryBeamVector.X, secondaryBeamVector.Y, secondaryBeamVector.Z);
 
-            fitPrimary.Plane = new Plane();
-            fitPrimary.Plane.Origin = new Point(PrimaryBeamEdge.X, PrimaryBeamEdge.Y, PrimaryBeamEdge.Z);
-            fitPrimary.Plane.AxisX = new Vector(Vector.Cross(PrimaryCoordinateSystem.AxisX,
-                                                Vector.Cross(PrimaryCoordinateSystem.AxisX, PrimaryCoordinateSystem.AxisY)));
+            var fitPrimary = new Fitting
+            {
+                Plane = new Plane
+                {
+                    Origin = new Point(primaryBeamEdge.X, primaryBeamEdge.Y, primaryBeamEdge.Z),
+                    AxisX = new Vector(Vector.Cross(primaryCoordinateSystem.AxisX,
+                        Vector.Cross(primaryCoordinateSystem.AxisX, primaryCoordinateSystem.AxisY)))
+                }
+            };
             fitPrimary.Plane.AxisX.Normalize(500);
-            fitPrimary.Plane.AxisY = new Vector(Vector.Cross(PrimaryCoordinateSystem.AxisX, PrimaryCoordinateSystem.AxisY));
+            fitPrimary.Plane.AxisY = new Vector(Vector.Cross(primaryCoordinateSystem.AxisX, primaryCoordinateSystem.AxisY));
             fitPrimary.Plane.AxisY.Normalize(500);
-            fitPrimary.Father = PrimaryBeam;
+            fitPrimary.Father = primaryBeam;
 
-            fitSecondary.Plane = new Plane();
-            fitSecondary.Plane.Origin = new Point(SecondaryBeamEdge.X, SecondaryBeamEdge.Y, SecondaryBeamEdge.Z);
-            fitSecondary.Plane.AxisX = new Vector(Vector.Cross(SecondaryCoordinateSystem.AxisX,
-                                                Vector.Cross(SecondaryCoordinateSystem.AxisX, SecondaryCoordinateSystem.AxisY)));
+            var fitSecondary = new Fitting
+            {
+                Plane = new Plane
+                {
+                    Origin = new Point(secondaryBeamEdge.X, secondaryBeamEdge.Y, secondaryBeamEdge.Z),
+                    AxisX = new Vector(Vector.Cross(secondaryCoordinateSystem.AxisX,
+                        Vector.Cross(secondaryCoordinateSystem.AxisX, secondaryCoordinateSystem.AxisY)))
+                }
+            };
             fitSecondary.Plane.AxisX.Normalize(500);
-            fitSecondary.Plane.AxisY = new Vector(Vector.Cross(SecondaryCoordinateSystem.AxisX, SecondaryCoordinateSystem.AxisY));
+            fitSecondary.Plane.AxisY = new Vector(Vector.Cross(secondaryCoordinateSystem.AxisX, secondaryCoordinateSystem.AxisY));
             fitSecondary.Plane.AxisY.Normalize(500);
-            fitSecondary.Father = SecondaryBeam;
+            fitSecondary.Father = secondaryBeam;
 
-            if(fitPrimary.Insert() && fitSecondary.Insert())
-                Result = true;
-
-            return Result;
+            return fitPrimary.Insert() && fitSecondary.Insert();
         }
+
         private static void ChangeVectorDirection(Point vector)
         {
             vector.X = -1 * vector.X;
@@ -365,37 +351,51 @@ namespace SpliceConn
         /// </summary>
         private void GetValuesFromDialog()
         {
-            _PlateLength = _data.PlateLength;
-            _BoltStandard = _data.BoltStandard;
-            _UpDirection = _data.UpDirection;
-            _RotationAngleY = _data.RotationAngleY;
-            _RotationAngleX = _data.RotationAngleX;
-            _Locked = _data.Locked;
-            _Class = _data.Class;
-            _ConnectionCode = _data.ConnectionCode;
-            _AutoDefaults = _data.AutoDefaults;
-            _AutoConnection = _data.AutoConnection;
+            _plateLength = _data.PlateLength;
+            _boltStandard = _data.BoltStandard;
+            _upDirection = _data.UpDirection;
+            _rotationAngleY = _data.RotationAngleY;
+            _rotationAngleX = _data.RotationAngleX;
+            _locked = _data.Locked;
+            _class = _data.Class;
+            _connectionCode = _data.ConnectionCode;
+            _autoDefaults = _data.AutoDefaults;
+            _autoConnection = _data.AutoConnection;
 
-            if (IsDefaultValue(_PlateLength) || _PlateLength == 0)
-                _PlateLength = 300.0;
-            if (IsDefaultValue(_BoltStandard) || _BoltStandard == "")
-                _BoltStandard = "7990";
-            if (IsDefaultValue(_UpDirection) || _UpDirection == 0)
-                _UpDirection = 0;
-            if (IsDefaultValue(_RotationAngleY))
-                _RotationAngleY = 0;
-            if (IsDefaultValue(_RotationAngleX))
-                _RotationAngleX = 0;
-            if (IsDefaultValue(_Locked))
-                _Locked = 0;
-            if (IsDefaultValue(_Class))
-                _Class = 99;
-            if (IsDefaultValue(_ConnectionCode))
-                _ConnectionCode = "";
-            if (IsDefaultValue(_AutoDefaults) || _AutoDefaults == "")
-                _AutoDefaults = "albl_no_root";
-            if (IsDefaultValue(_AutoConnection) || _AutoConnection == "")
-                _AutoConnection = "albl_no_root";
+            if (IsDefaultValue(_plateLength) || _plateLength == 0)
+                _plateLength = 300.0;
+            if (IsDefaultValue(_boltStandard) || _boltStandard == "")
+                _boltStandard = "7990";
+            if (IsDefaultValue(_upDirection) || _upDirection == 0)
+                _upDirection = 0;
+            if (IsDefaultValue(_rotationAngleY))
+                _rotationAngleY = 0;
+            if (IsDefaultValue(_rotationAngleX))
+                _rotationAngleX = 0;
+            if (IsDefaultValue(_locked))
+                _locked = 0;
+            if (IsDefaultValue(_class))
+                _class = 99;
+            if (IsDefaultValue(_connectionCode))
+                _connectionCode = "";
+            if (IsDefaultValue(_autoDefaults) || _autoDefaults == "")
+                _autoDefaults = "albl_no_root";
+            if (IsDefaultValue(_autoConnection) || _autoConnection == "")
+                _autoConnection = "albl_no_root";
+        }
+        #endregion
+
+        #region Debug method for windows app
+        //this is required for future debugging plugin
+        [STAThread]
+        static void Main()
+        {
+            var pluginData = new StructuresData();
+            var debugPlugin = new SpliceConnection(pluginData);
+            //var inputDefinitions = debugPlugin.DefineInput();
+            //var form = new SpliceConnectionForm();
+            //form.ShowDialog();
+            debugPlugin.Run();
         }
         #endregion
     }
