@@ -3,7 +3,7 @@ namespace SpliceConn
     public class ConnectionSpliceDefaults
     {
         public const double PlateLength = 300;
-        public const string BoltStandard = "A325";
+        public const string BoltStandard = "A325N";
         public const int UpDirection = 0;
         public const double RotationAngleY = 0;
         public const double RotationAngleX = 0;

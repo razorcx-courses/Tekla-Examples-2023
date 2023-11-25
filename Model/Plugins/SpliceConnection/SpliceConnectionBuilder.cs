@@ -256,20 +256,20 @@ namespace SpliceConn
                 secondaryBeamEdge = secondaryBeam.EndPoint;
             }
 
-            return CreateFittings(primaryBeam, secondaryBeam, primaryBeamEdge, secondaryBeamEdge,
-                primaryBeamVector, secondaryBeamVector);
+            var primaryFittingResult = CreatePrimaryFitting(primaryBeam, primaryBeamEdge, primaryBeamVector);
+
+            var secondaryFittingResult = CreateSecondaryFitting(primaryBeam, secondaryBeam, secondaryBeamEdge);
+
+            return primaryFittingResult && secondaryFittingResult;
 
         }
 
         //Creates the fittings used to create the gap between the beams
-        private static bool CreateFittings(Beam primaryBeam, Beam secondaryBeam, Point primaryBeamEdge, Point secondaryBeamEdge,
-                                           Vector primaryBeamVector, Vector secondaryBeamVector)
+        private static bool CreatePrimaryFitting(Beam primaryBeam, Point primaryBeamEdge, Vector primaryBeamVector)
         {
             var primaryCoordinateSystem = primaryBeam.GetCoordinateSystem();
-            var secondaryCoordinateSystem = primaryBeam.GetCoordinateSystem();
 
             primaryBeamEdge.Translate(primaryBeamVector.X, primaryBeamVector.Y, primaryBeamVector.Z);
-            secondaryBeamEdge.Translate(secondaryBeamVector.X, secondaryBeamVector.Y, secondaryBeamVector.Z);
 
             var fitPrimary = new Fitting
             {
@@ -285,6 +285,13 @@ namespace SpliceConn
             fitPrimary.Plane.AxisY.Normalize(500);
             fitPrimary.Father = primaryBeam;
 
+            return fitPrimary.Insert();
+        }
+
+        private static bool CreateSecondaryFitting(Beam primaryBeam, Beam secondaryBeam, Point secondaryBeamEdge)
+        {
+            var secondaryCoordinateSystem = primaryBeam.GetCoordinateSystem();
+
             var fitSecondary = new Fitting
             {
                 Plane = new Plane
@@ -299,8 +306,9 @@ namespace SpliceConn
             fitSecondary.Plane.AxisY.Normalize(500);
             fitSecondary.Father = secondaryBeam;
 
-            return fitPrimary.Insert() && fitSecondary.Insert();
+            return fitSecondary.Insert();
         }
+
 
         private static void ChangeVectorDirection(Point vector)
         {

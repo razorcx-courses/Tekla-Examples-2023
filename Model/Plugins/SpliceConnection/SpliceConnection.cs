@@ -114,9 +114,6 @@ namespace SpliceConn
                 Debug = true
             };
 
-            //var inputDefinitions = debugPlugin.DefineInput();
-            //var form = new SpliceConnectionForm();
-            //form.ShowDialog();
             debugPlugin.Run();
         }
         #endregion
