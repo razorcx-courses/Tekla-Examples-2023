@@ -73,10 +73,6 @@ namespace SpliceConn
 
             try
             {
-                // First get the essential dimensions from the beam
-                var canCreateGaps = CreateGapBetweenBeams(primaryBeam, secondaryBeam, GAP);
-                if (!canCreateGaps) return false;
-
                 var webThickness = secondaryBeam.GetReportProperty<double>("PROFILE.WEB_THICKNESS");
                 var beamHeight = secondaryBeam.GetReportProperty<double>("PROFILE.HEIGHT");
                 var flangeHeight = secondaryBeam.GetReportProperty<double>("PROFILE.FLANGE_THICKNESS");
@@ -84,14 +80,10 @@ namespace SpliceConn
                 var validProperties = webThickness > 0.0 && beamHeight > 0.0 && flangeHeight > 0.0;
                 if (!validProperties) return false;
 
-                var coordSys = primaryBeam.GetCoordinateSystem();
+                var canCreateGaps = CreateGapBetweenBeams(primaryBeam, secondaryBeam, GAP);
+                if (!canCreateGaps) return false;
 
-                if (Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.StartPoint) < EPSILON ||
-                    Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.EndPoint) < EPSILON)
-                {
-                    coordSys.Origin.Translate(coordSys.AxisX.X, coordSys.AxisX.Y, coordSys.AxisX.Z);
-                    coordSys.AxisX *= -1;
-                }
+                var coordSys = GetCoordinateSystem(primaryBeam, secondaryBeam);
 
                 //Creates plates on both sides of the beam.
 
@@ -106,20 +98,7 @@ namespace SpliceConn
 
                 model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(coordSys));
 
-                var profile = "PL" + (int)webThickness + "*" + (int)plateLength;
-
-                var plate1StartPoint = new Point(0, (-beamHeight / 2.0) + edgeDistance, webThickness);
-                var plate1EndPoint = new Point(plate1StartPoint)
-                {
-                    Y = beamHeight/2 - edgeDistance
-                };
-
-                var plate1 = CreatePlate1(plate1StartPoint, plate1EndPoint, profile);
-
-                var plate2StartPoint = new Point(plate1StartPoint.X, plate1StartPoint.Y, -webThickness);
-                var plate2EndPoint = new Point(plate1EndPoint.X, plate1EndPoint.Y, -webThickness);
-
-                var plate2 = CreatePlate2(plate2StartPoint, plate2EndPoint, profile);
+                CreatePlates(plateLength, webThickness, beamHeight, edgeDistance, out var plate1, out var plate2);
 
                 #endregion
 
@@ -140,7 +119,42 @@ namespace SpliceConn
             }
         }
 
-        private static Beam CreatePlate1(Point startPoint, Point endPoint, string profile)
+        private static CoordinateSystem GetCoordinateSystem(Beam primaryBeam, Beam secondaryBeam)
+        {
+            var coordSys = primaryBeam.GetCoordinateSystem();
+
+            if (Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.StartPoint) < EPSILON ||
+                Distance.PointToPoint(primaryBeam.EndPoint, secondaryBeam.EndPoint) < EPSILON)
+            {
+                coordSys.Origin.Translate(coordSys.AxisX.X, coordSys.AxisX.Y, coordSys.AxisX.Z);
+                coordSys.AxisX *= -1;
+            }
+
+            return coordSys;
+        }
+
+        private static void CreatePlates(double plateLength, double webThickness, double beamHeight, double edgeDistance,
+            out Beam plate1, out Beam plate2)
+        {
+            var profile = "PL" + (int)webThickness + "*" + (int)plateLength;
+            var finish = "PAINT";
+            var label = "WEBPLATE";
+
+            var plate1StartPoint = new Point(0, (-beamHeight / 2.0) + edgeDistance, webThickness);
+            var plate1EndPoint = new Point(plate1StartPoint)
+            {
+                Y = beamHeight / 2 - edgeDistance
+            };
+
+            plate1 = CreatePlate(plate1StartPoint, plate1EndPoint, profile, finish, label + "01");
+
+            var plate2StartPoint = new Point(plate1StartPoint.X, plate1StartPoint.Y, -webThickness);
+            var plate2EndPoint = new Point(plate1EndPoint.X, plate1EndPoint.Y, -webThickness);
+
+            plate2 = CreatePlate(plate2StartPoint, plate2EndPoint, profile, finish, label + "02");
+        }
+
+        private static Beam CreatePlate(Point startPoint, Point endPoint, string profile, string finish, string label)
         {
             var plate1 = new Beam
             {
@@ -155,37 +169,11 @@ namespace SpliceConn
                 {
                     ProfileString = profile
                 },
-                Finish = "PAINT"
+                Finish = finish
             };
-            plate1.SetLabel("WebPlate01");
+            plate1.SetLabel(label);
             plate1.Insert();
             return plate1;
-        }
-
-        private static Beam CreatePlate2(Point startPoint, Point endPoint, string profile)
-        {
-            var plate2 = new Beam
-            {
-                Position =
-                {
-                    Depth = Position.DepthEnum.MIDDLE,
-                    Rotation = Position.RotationEnum.FRONT
-                },
-                StartPoint = startPoint,
-                EndPoint = endPoint,
-                Profile =
-                {
-                    ProfileString = profile
-                },
-                Finish = "PAINT"
-            };
-
-            // With this we help internal code to assign same ID to plates when plugin is modified.
-            // To avoid some problems related to links with UDA values or booleans (cuts, fittings) for example.
-
-            plate2.SetLabel("WebPlate02");
-            plate2.Insert();
-            return plate2;
         }
 
         private static bool CreateBoltArray(Beam beam, Beam plate1, Beam plate2, double plateHeight,
