@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="ConnectionSpliceDefaults.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
