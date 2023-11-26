@@ -58,22 +58,16 @@ namespace SpliceConn
         {
             if (!(sender is Control thisControl)) return;
 
-            var control = GetEnableCheckBox(structuresExtender.GetAttributeName(thisControl), this);
+            var attributeName = structuresExtender.GetAttributeName(thisControl);
 
-            if (!(control is CheckBox enableCheckBox)) return;
-
-            enableCheckBox.Checked = true;
-        }
-
-        private Control GetEnableCheckBox(string attributeName, Control parent)
-        {
-            var foundCheckBox = parent
+            var foundCheckBox = thisControl
                 .FindAllChildrenByType<CheckBox>()
                 .FirstOrDefault(c => attributeName == structuresExtender.GetAttributeName(c));
 
-            return foundCheckBox;
-        }
+            if (foundCheckBox == null) return;
 
+            foundCheckBox.Checked = true;
+        }
 
         // Use the following method if UI contains ImageListComboBox controls
 
