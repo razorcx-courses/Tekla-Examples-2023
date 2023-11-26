@@ -111,7 +111,7 @@ namespace SpliceConn
                 var plate1StartPoint = new Point(0, (-beamHeight / 2.0) + edgeDistance, webThickness);
                 var plate1EndPoint = new Point(plate1StartPoint)
                 {
-                    Y = beamHeight/2
+                    Y = beamHeight/2 - edgeDistance
                 };
 
                 var plate1 = CreatePlate1(plate1StartPoint, plate1EndPoint, profile);
