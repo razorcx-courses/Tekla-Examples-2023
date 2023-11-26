@@ -1,4 +1,7 @@
-﻿using Tekla.Structures.Model;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using Tekla.Structures.Model;
 
 namespace SpliceConn
 {
@@ -27,6 +30,15 @@ namespace SpliceConn
             }
 
             return (T)(new object());
+        }
+
+        public static List<T> FindAllChildrenByType<T>(this Control control)
+        {
+            var controls = control.Controls.Cast<Control>().ToList();
+
+            return controls
+                .OfType<T>()
+                .Concat(controls.SelectMany(FindAllChildrenByType<T>)).ToList();
         }
     }
 }

@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using Tekla.Structures.Dialog;
+
 
 namespace SpliceConn
 {
@@ -42,48 +44,6 @@ namespace SpliceConn
             this.ToggleSelection();
         }
 
-        private Control GetEnableCheckBox(string attributeName, Control parent)
-        {
-            Control foundCheckBox = null;
-
-            for (var i = 0; i < parent.Controls.Count && foundCheckBox == null; i++)
-            {
-                var control = parent.Controls[i];
-
-                if (control.GetType() == typeof(CheckBox))
-                {
-                    var checkBox = control as CheckBox;
-
-                    if (attributeName == structuresExtender.GetAttributeName(checkBox))
-                    {
-                        foundCheckBox = checkBox;
-                    }
-                }
-                else
-                {
-                    foundCheckBox = GetEnableCheckBox(attributeName, control);
-                }
-            }
-
-            return foundCheckBox;
-        }
-
-        private void SetThisControlEnableCheckBoxChecked(object sender)
-        {
-            var thisControl = sender as Control;
-
-            if (thisControl != null)
-            {
-                var control = GetEnableCheckBox(structuresExtender.GetAttributeName(thisControl), this);
-                var enableCheckBox = control as CheckBox;
-
-                if (enableCheckBox != null)
-                {
-                    enableCheckBox.Checked = true;
-                }
-            }
-        }
-
         private void anyTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             SetThisControlEnableCheckBoxChecked(sender);
@@ -93,6 +53,27 @@ namespace SpliceConn
         {
             SetThisControlEnableCheckBoxChecked(sender);
         }
+
+        private void SetThisControlEnableCheckBoxChecked(object sender)
+        {
+            if (!(sender is Control thisControl)) return;
+
+            var control = GetEnableCheckBox(structuresExtender.GetAttributeName(thisControl), this);
+
+            if (!(control is CheckBox enableCheckBox)) return;
+
+            enableCheckBox.Checked = true;
+        }
+
+        private Control GetEnableCheckBox(string attributeName, Control parent)
+        {
+            var foundCheckBox = parent
+                .FindAllChildrenByType<CheckBox>()
+                .FirstOrDefault(c => attributeName == structuresExtender.GetAttributeName(c));
+
+            return foundCheckBox;
+        }
+
 
         // Use the following method if UI contains ImageListComboBox controls
 
