@@ -5,23 +5,23 @@ namespace SpliceConn
 {
     public class PlateBuilder
     {
-        public void CreatePlates(double plateLength, double webThickness, double beamHeight, double edgeDistance,
+        public void CreatePlates(double length, double thickness, double height, double edgeDistance,
             out Beam plate1, out Beam plate2)
         {
-            var profile = "PL" + (int)webThickness + "*" + (int)plateLength;
+            var profile = "PL" + (int)thickness + "*" + (int)length;
             var finish = "PAINT";
             var label = "WEBPLATE";
 
-            var plate1StartPoint = new Point(0, (-beamHeight / 2.0) + edgeDistance, webThickness);
+            var plate1StartPoint = new Point(0, (-height / 2.0) + edgeDistance, thickness);
             var plate1EndPoint = new Point(plate1StartPoint)
             {
-                Y = beamHeight / 2 - edgeDistance
+                Y = height / 2 - edgeDistance
             };
 
             plate1 = CreatePlate(plate1StartPoint, plate1EndPoint, profile, finish, label + "01");
 
-            var plate2StartPoint = new Point(plate1StartPoint.X, plate1StartPoint.Y, -webThickness);
-            var plate2EndPoint = new Point(plate1EndPoint.X, plate1EndPoint.Y, -webThickness);
+            var plate2StartPoint = new Point(plate1StartPoint.X, plate1StartPoint.Y, -thickness);
+            var plate2EndPoint = new Point(plate1EndPoint.X, plate1EndPoint.Y, -thickness);
 
             plate2 = CreatePlate(plate2StartPoint, plate2EndPoint, profile, finish, label + "02");
         }
