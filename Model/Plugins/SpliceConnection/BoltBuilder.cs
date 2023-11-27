@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Tekla.Structures.Geometry3d;
+﻿using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
 
 namespace SpliceConn
@@ -35,17 +34,19 @@ namespace SpliceConn
             boltArray.BoltStandard = boltStandard;
 
             //set start and end point offsets
-            boltArray.StartPointOffset.Dx = plateLength - 75;
-            boltArray.EndPointOffset.Dx = plateLength - 75;
+            var dx = plateLength - 75;
+            boltArray.StartPointOffset.Dx = dx;
+            boltArray.EndPointOffset.Dx = dx;
 
             //add bolt columns & rows
+            var distY = plateHeight - 150.0;
             boltArray.AddBoltDistX(0.0);
-            boltArray.AddBoltDistY(plateHeight - 150.0);
+            boltArray.AddBoltDistY(distY);
 
             return boltArray.Insert();
         }
 
-        private BoltArray GetDefaultBoltArray()
+        private static BoltArray GetDefaultBoltArray()
         {
             var boltArray = new BoltArray
             {
@@ -53,13 +54,13 @@ namespace SpliceConn
                 SecondPosition = new Point(),
                 StartPointOffset =
                 {
-                    Dx = 100,
+                    Dx = 0,
                     Dy = 0,
                     Dz = 0
                 },
                 EndPointOffset =
                 {
-                    Dx = 100,
+                    Dx = 0,
                     Dy = 0,
                     Dz = 0
                 },
