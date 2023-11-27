@@ -1,6 +1,5 @@
 ﻿using System;
 using Tekla.Structures.Model;
-using TSMUI = Tekla.Structures.Model.UI;
 
 namespace SpliceConn
 {
@@ -14,44 +13,17 @@ namespace SpliceConn
         private readonly PlateBuilder _plateBuilder = new PlateBuilder();
         private readonly BoltBuilder _boltBuilder = new BoltBuilder();
 
-        public bool Create(Data data)
+        public bool Create(Data data, Beam primaryBeam, Beam secondaryBeam)
         {
-            _data = data;
-
-            //debugging
-            SelectBeamsForDebugging(out var primaryBeam, out var secondaryBeam);
-
-            //for connection plugin
-            //Get primary and secondary
-            //SelectBeamsForConnectionPlugin(out var primaryBeam, out var secondaryBeam);
-
             if (primaryBeam == null || secondaryBeam == null) return false;
+
+            _data = data;
 
             if (!TeklaHelper.AreProfilesEqual(primaryBeam, secondaryBeam)) return false;
 
             if (!TeklaHelper.AreBeamsAligned(primaryBeam, secondaryBeam)) return false;
 
             return CreateSpliceConnection(primaryBeam, secondaryBeam, _model, _data.PlateLength, _data.BoltStandard);
-        }
-
-        //private void SelectBeamsForConnectionPlugin(out Beam primaryBeam, out Beam secondaryBeam)
-        //{
-        //    if (Primary == null || Secondaries.Count < 1) return null;
-        //    primaryBeam = _model.SelectModelObject(Primary) as Beam;
-        //    secondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
-        //}
-
-        private static void SelectBeamsForDebugging(out Beam primaryBeam, out Beam secondaryBeam)
-        {
-            //for debugging as windows forms app
-            var objects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
-
-            objects.MoveNext();
-            var primary = objects.Current as Beam;
-            objects.MoveNext();
-            var secondary = objects.Current as Beam;
-            primaryBeam = primary;
-            secondaryBeam = secondary;
         }
 
         private bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam, Model model,

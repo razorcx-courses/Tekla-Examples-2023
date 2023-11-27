@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Tekla.Structures;
 using Tekla.Structures.Plugins;
 using Tekla.Structures.Model;
+using TSMUI = Tekla.Structures.Model.UI;
 
 namespace SpliceConn
 {
@@ -34,9 +35,19 @@ namespace SpliceConn
         {
             try
             {
+                if (Primary == null || Secondaries.Count < 1) return false;
+
                 var data = GetValuesFromDialog();
 
-                return _spliceConnectionBuilder.Create(data);
+                Beam primaryBeam;
+                Beam secondaryBeam;
+
+                if(Debug) SelectBeamsForDebugging(out primaryBeam, out secondaryBeam);
+                else SelectBeamsForConnectionPlugin(out primaryBeam, out secondaryBeam);
+
+                if (primaryBeam == null || secondaryBeam == null) return false;
+
+                return _spliceConnectionBuilder.Create(data, primaryBeam, secondaryBeam);
             }
 
             catch (Exception exc)
@@ -51,6 +62,23 @@ namespace SpliceConn
                 //automatic when used as a connection plugin
                 _model.CommitChanges();
             }
+        }
+        private void SelectBeamsForConnectionPlugin(out Beam primaryBeam, out Beam secondaryBeam)
+        {
+            primaryBeam = _model.SelectModelObject(Primary) as Beam;
+            secondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
+        }
+        private static void SelectBeamsForDebugging(out Beam primaryBeam, out Beam secondaryBeam)
+        {
+            //for debugging as windows forms app
+            var objects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
+
+            objects.MoveNext();
+            var primary = objects.Current as Beam;
+            objects.MoveNext();
+            var secondary = objects.Current as Beam;
+            primaryBeam = primary;
+            secondaryBeam = secondary;
         }
         #endregion
 
