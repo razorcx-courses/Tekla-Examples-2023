@@ -51,7 +51,7 @@ namespace SpliceConn
         private bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam, Model model,
             double plateLength, string boltStandard)
         {
-            var originalTransformationPlane = model.GetWorkPlaneHandler().GetCurrentTransformationPlane();
+            var originalTransformationPlane = model.GetTransformationPlane();
 
             try
             {
@@ -74,13 +74,12 @@ namespace SpliceConn
                 var edgeDistance = (flangeHeight + innerRoundingRadius + innerMargin);
                 var plateHeight = beamHeight - 2 * edgeDistance;
 
-                model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(coordSys));
+                model.SetTransformationPlane(coordSys);
 
                 _plateBuilder.CreatePlates(plateLength, webThickness, beamHeight, edgeDistance, 
                     out var plate1, out var plate2);
 
-                model.GetWorkPlaneHandler()
-                    .SetCurrentTransformationPlane(new TransformationPlane(plate1.GetCoordinateSystem()));
+                model.SetTransformationPlane(plate1.GetCoordinateSystem());
 
                 //Creates two boltArrays to connect the plates
                 return _boltBuilder.CreateBoltArray(primaryBeam, plate1, plate2, plateHeight, 
@@ -94,7 +93,7 @@ namespace SpliceConn
             }
             finally
             {
-                model.GetWorkPlaneHandler().SetCurrentTransformationPlane(originalTransformationPlane);
+                model.SetTransformationPlane(originalTransformationPlane);
             }
         }
     }

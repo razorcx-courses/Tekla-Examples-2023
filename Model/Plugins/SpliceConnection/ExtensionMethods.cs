@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
 
 namespace SpliceConn
@@ -39,6 +40,21 @@ namespace SpliceConn
             return controls
                 .OfType<T>()
                 .Concat(controls.SelectMany(FindAllChildrenByType<T>)).ToList();
+        }
+
+        public static void SetTransformationPlane(this Model model, CoordinateSystem coordinateSystem)
+        {
+            model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(coordinateSystem));
+        }
+
+        public static void SetTransformationPlane(this Model model, TransformationPlane transformationPlane)
+        {
+            model.GetWorkPlaneHandler().SetCurrentTransformationPlane(transformationPlane);
+        }
+
+        public static TransformationPlane GetTransformationPlane(this Model model)
+        {
+            return model.GetWorkPlaneHandler().GetCurrentTransformationPlane(); 
         }
     }
 }
