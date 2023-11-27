@@ -8,7 +8,17 @@ namespace SpliceConn
     {
         private const double EPSILON = 0.001;
 
-        public static bool CheckIfBeamsAreAligned(Beam primaryBeam, Beam secondaryBeam)
+        public static bool AreProfilesEqual(Beam primaryBeam, Beam secondaryBeam)
+        {
+            var primaryProfileType = primaryBeam.GetReportProperty<string>("PROFILE_TYPE");
+            var secondaryProfileType = primaryBeam.GetReportProperty<string>("PROFILE_TYPE");
+
+            if (primaryBeam.Profile.ProfileString != secondaryBeam.Profile.ProfileString ||
+                primaryProfileType != secondaryProfileType) return false;
+            return true;
+        }
+
+        public static bool AreBeamsAligned(Beam primaryBeam, Beam secondaryBeam)
         {
             if (primaryBeam == null || secondaryBeam == null) return false;
 

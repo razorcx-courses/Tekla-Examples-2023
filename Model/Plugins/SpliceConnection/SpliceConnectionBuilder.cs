@@ -18,6 +18,31 @@ namespace SpliceConn
         {
             _data = data;
 
+            //debugging
+            SelectBeamsForDebugging(out var primaryBeam, out var secondaryBeam);
+
+            //for connection plugin
+            //Get primary and secondary
+            //SelectBeamsForConnectionPlugin(out var primaryBeam, out var secondaryBeam);
+
+            if (primaryBeam == null || secondaryBeam == null) return false;
+
+            if (!TeklaHelper.AreProfilesEqual(primaryBeam, secondaryBeam)) return false;
+
+            if (!TeklaHelper.AreBeamsAligned(primaryBeam, secondaryBeam)) return false;
+
+            return CreateSpliceConnection(primaryBeam, secondaryBeam, _model, _data.PlateLength, _data.BoltStandard);
+        }
+
+        //private void SelectBeamsForConnectionPlugin(out Beam primaryBeam, out Beam secondaryBeam)
+        //{
+        //    if (Primary == null || Secondaries.Count < 1) return null;
+        //    primaryBeam = _model.SelectModelObject(Primary) as Beam;
+        //    secondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
+        //}
+
+        private static void SelectBeamsForDebugging(out Beam primaryBeam, out Beam secondaryBeam)
+        {
             //for debugging as windows forms app
             var objects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
 
@@ -25,27 +50,8 @@ namespace SpliceConn
             var primary = objects.Current as Beam;
             objects.MoveNext();
             var secondary = objects.Current as Beam;
-            var primaryBeam = primary;
-            var secondaryBeam = secondary;
-
-
-            //for connection plugin
-            //Get primary and secondary
-            //if (Primary == null || Secondaries.Count < 1) return false;
-            //Beam PrimaryBeam = _model.SelectModelObject(Primary) as Beam;
-            //Beam SecondaryBeam = _model.SelectModelObject(Secondaries[0]) as Beam;
-
-            if (primaryBeam == null || secondaryBeam == null) return false;
-
-            var primaryProfileType = primaryBeam.GetReportProperty<string>("PROFILE_TYPE");
-            var secondaryProfileType = primaryBeam.GetReportProperty<string>("PROFILE_TYPE");
-
-            if (primaryBeam.Profile.ProfileString != secondaryBeam.Profile.ProfileString ||
-                primaryProfileType != secondaryProfileType) return false;
-
-            if (!TeklaHelper.CheckIfBeamsAreAligned(primaryBeam, secondaryBeam)) return false;
-
-            return CreateSpliceConnection(primaryBeam, secondaryBeam, _model, _data.PlateLength, _data.BoltStandard);
+            primaryBeam = primary;
+            secondaryBeam = secondary;
         }
 
         private bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam, Model model,
@@ -59,29 +65,31 @@ namespace SpliceConn
                 var beamHeight = secondaryBeam.GetReportProperty<double>("PROFILE.HEIGHT");
                 var flangeHeight = secondaryBeam.GetReportProperty<double>("PROFILE.FLANGE_THICKNESS");
 
+                //make sure we have beam profiles for calculating plate sizes and bolts
                 var validProperties = webThickness > 0.0 && beamHeight > 0.0 && flangeHeight > 0.0;
                 if (!validProperties) return false;
 
+                //create gap between beams
                 var canCreateGaps = _fittingBuilder.CreateGapBetweenBeams(primaryBeam, secondaryBeam, GAP);
                 if (!canCreateGaps) return false;
 
-                var coordSys = TeklaHelper.GetCoordinateSystem(primaryBeam, secondaryBeam);
-
-                //Creates plates on both sides of the beam.
+                //create plates on both sides of the beam.
                 var innerRoundingRadius = secondaryBeam.GetReportProperty<double>("PROFILE.ROUNDING_RADIUS_1");
                 const double innerMargin = 5.0;
 
                 var edgeDistance = (flangeHeight + innerRoundingRadius + innerMargin);
                 var plateHeight = beamHeight - 2 * edgeDistance;
 
+                var coordSys = TeklaHelper.GetCoordinateSystem(primaryBeam, secondaryBeam);
                 model.SetTransformationPlane(coordSys);
 
                 _plateBuilder.CreatePlates(plateLength, webThickness, beamHeight, edgeDistance, 
                     out var plate1, out var plate2);
 
+                //change coordinate system for bolt creation
                 model.SetTransformationPlane(plate1.GetCoordinateSystem());
 
-                //Creates two boltArrays to connect the plates
+                //create two boltArrays to connect the plates
                 return _boltBuilder.CreateBoltArray(primaryBeam, plate1, plate2, plateHeight, 
                            true, plateLength, boltStandard) &&
                        _boltBuilder.CreateBoltArray(secondaryBeam, plate1, plate2, plateHeight, 
