@@ -94,6 +94,7 @@
     <Compile Include="Data.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FittingBuilder.cs" />
+    <Compile Include="PlaneBuilder.cs" />
     <Compile Include="TeklaHelper.cs" />
     <Compile Include="PlateBuilder.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
