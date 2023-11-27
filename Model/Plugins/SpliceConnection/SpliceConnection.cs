@@ -74,14 +74,20 @@ public partial class SpliceConnection : PluginFormBase
 
         var attributeName = structuresExtender.GetAttributeName(thisControl);
 
-        var foundCheckBox = thisControl
-            .FindAllChildrenByType<CheckBox>()
+        var children = this.FindAllChildrenByType<CheckBox>();
+
+        //MessageBox.Show($@"{children.Count}, {attributeName}");
+
+        var foundCheckBox = children
             .FirstOrDefault(c => attributeName == structuresExtender.GetAttributeName(c));
+
+        //MessageBox.Show($@"{foundCheckBox?.Name}, {attributeName}");
 
         if (foundCheckBox == null) return;
 
         foundCheckBox.Checked = true;
     }
+
 
     // Use the following method if UI contains ImageListComboBox controls
 
