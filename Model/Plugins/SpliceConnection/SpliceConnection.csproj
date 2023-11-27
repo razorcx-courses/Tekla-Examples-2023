@@ -124,7 +124,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ReadMe.txt" />
     <Content Include="Resources\element_catalog_cross_section.bmp" />
     <Content Include="Resources\element_catalog_cross_section_sketch.bmp" />
     <Content Include="Resources\element_catalog_cross_section_user.bmp" />
