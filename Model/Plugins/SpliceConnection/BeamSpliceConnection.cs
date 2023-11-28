@@ -37,7 +37,8 @@ namespace SpliceConn
         {
             try
             {
-                if (Primary == null || Secondaries.Count < 1) return false;
+                if(!Debug)
+                    if (Primary == null || Secondaries.Count < 1) return false;
 
                 var data = GetValuesFromDialog();
 
