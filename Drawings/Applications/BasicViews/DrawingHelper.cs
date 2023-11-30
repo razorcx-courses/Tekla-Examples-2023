@@ -17,7 +17,7 @@ namespace BasicViews
         /// <param name="myDrawing"></param>
         /// <param name="parts"></param>
         public void CreateViews(CoordinateSystem modelObjectCoordSys, string modelObjectName,
-            GADrawing myDrawing, ArrayList parts, FormData formData)
+            Drawing myDrawing, ArrayList parts, FormData formData)
         {
             if (formData.FrontView)
                 AddView("Front view of " + modelObjectName, myDrawing, parts,

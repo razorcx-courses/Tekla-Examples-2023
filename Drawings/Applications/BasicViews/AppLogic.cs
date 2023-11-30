@@ -1,11 +1,14 @@
 using System;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Tekla.Structures;
 using Tekla.Structures.Drawing;
 using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
 using ModelObject = Tekla.Structures.Model.ModelObject;
 using Part = Tekla.Structures.Model.Part;
 using TSMUI = Tekla.Structures.Model.UI;
+using View = Tekla.Structures.Drawing.View;
 
 namespace BasicViews
 {
@@ -26,7 +29,7 @@ namespace BasicViews
                 _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane()); // We use global transformation
                 var selectedModelObjects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
 
-                GADrawing myDrawing = null;
+                AssemblyDrawing myDrawing = null;
 
                 while (selectedModelObjects.MoveNext())
                 {
@@ -38,25 +41,55 @@ namespace BasicViews
                     var modelObjectName = GetNameOfSelectedObject(currentObject);
 
                     // Creates new empty general arrangement drawing
-                    myDrawing = new GADrawing(drawingName, "standard");
+
+                    var part = currentObject as Part;
+                    var assy = part.GetAssembly();
+                    myDrawing = new AssemblyDrawing(assy.Identifier, "All-Views");
+                    var pl1 = myDrawing.PlaceViews();
+                    //myDrawing = new GADrawing(drawingName, "standard");
                     myDrawing.Insert();
 
-                    if (formData.OpenDrawing)
-                        _drawingHandler.SetActiveDrawing(myDrawing, true); // Open drawing in editor
-                    else
-                        _drawingHandler.SetActiveDrawing(myDrawing, false); // Open drawing in invisible mode. When drawing is opened in invisible mode, it must always be saved and closed.
+                    //if (formData.OpenDrawing)
+                    //    _drawingHandler.SetActiveDrawing(myDrawing, true); // Open drawing in editor
+                    //else
+                    //    _drawingHandler.SetActiveDrawing(myDrawing, false); // Open drawing in invisible mode. When drawing is opened in invisible mode, it must always be saved and closed.
 
                     // Handle different model object types
 
                     //fetch parts
-                    var parts = _partFetcher.FetchParts(selectedModelObjects);
+                    //var parts = _partFetcher.FetchParts(selectedModelObjects);
 
-                    _drawingHelper.CreateViews(modelObjectCoordSys, modelObjectName, myDrawing, parts, formData);
+                    //_drawingHelper.CreateViews(modelObjectCoordSys, modelObjectName, myDrawing, parts, formData);
 
-                    myDrawing.PlaceViews();
+                    var pl2 = myDrawing.PlaceViews();
+                    myDrawing.Modify();
+
+                    myDrawing.CommitChanges();
+
+                    myDrawing.Select();
+                    var pl3 = myDrawing.PlaceViews();
+                    myDrawing.Modify();
+                    myDrawing.CommitChanges();
 
                     _drawingHandler.CloseActiveDrawing(true); // Save and close the active drawing
                 }
+
+                foreach (View view in myDrawing.GetSheet().GetViews())
+                {
+                    var viewDetails = JsonConvert.SerializeObject(view, Formatting.Indented);
+
+                    var sheet = myDrawing.GetSheet();
+                    var height = sheet.Height;
+
+                    view.Origin = new Point(40, height-50, view.Origin.Z);
+                    view.Name = "This is the BEAM name which can be changed with API";
+                    //view.Attributes.PartialProfileLength = 100;
+                    view.Attributes.Scale = 10;
+                    view.Modify();
+                    
+                }
+
+                myDrawing.CommitChanges();
 
                 if (myDrawing != null && formData.OpenDrawing)
                     _drawingHandler.SetActiveDrawing(myDrawing);
