@@ -96,6 +96,7 @@
       <DependentUpon>BasicViews.cs</DependentUpon>
     </Compile>
     <Compile Include="CoordinateSystemHelper.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="DrawingHelper.cs" />
     <Compile Include="FormData.cs" />
     <Compile Include="PartFetcher.cs" />

@@ -12,68 +12,33 @@ namespace BasicViews
 {
     public partial class BasicViews : Form
     {
-        private AppLogic _appLogic = new AppLogic();
-
+        private readonly AppLogic _appLogic = new AppLogic();
+        private Data _data;
         public BasicViews()
         {
             InitializeComponent();
-            RegisterEventHandler();
+            _data = GetData();
         }
 
-        private Events _events = new Events();
-        private object _statusChangedEventHandlerLock = new object();
-
-        public void RegisterEventHandler()
+        private Data GetData()
         {
-            //_events.DrawingStatusChanged += Events_DrawingStatusChangedEvent;
-            _events.DrawingStatusChanged += Events_DrawingUpdatedEvent;
-            _events.Register();
-        }
-
-        private void Events_DrawingUpdatedEvent(Drawing drawing, Events.DrawingUpdateTypeEnum type)
-        {
-            lock (_statusChangedEventHandlerLock)
+            return new Data()
             {
-            }
-        }
-
-        public void UnRegisterEventHandler()
-        {
-            _events.UnRegister();
-        }
-
-        //void Events_DrawingStatusChangedEvent()
-        //{
-        //    /* Make sure that the inner code block is running synchronously */
-        //    lock (_statusChangedEventHandlerLock)
-        //    {
-        //        _events.
-        //        System.Console.WriteLine("Selection changed event received.");
-        //    }
-        //}
-
-        void Events_DrawingUpdatedEvent()
-        {
-            /* Make sure that the inner code block is running synchronously */
-            lock (_statusChangedEventHandlerLock)
-            {
-                //_events.
-                //    System.Console.WriteLine("Selection changed event received.");
-            }
+                showFrontView = frontViewCheckBox.Checked,
+                showTopView = topViewShowCheckBox.Checked,
+                showBottomView = bottomViewCheckBox.Checked,
+                showEndView = endViewShowCheckBox.Checked,
+                showSectionView = sectionViewShowCheckBox.Checked,
+                showNotes1 = notes1ShowCheckBox.Checked,
+                showNotes2 = note2ShowCheckBox.Checked,
+                showNotes3 = note3ShowCheckBox.Checked
+            };
         }
 
         private void Create_click(object sender, EventArgs e)
         {
-            var formData = new FormData
-            {
-                OpenDrawing = openDrawings.Checked,
-                EndView = endViewShowCheckBox.Checked,
-                FrontView = frontViewCheckBox.Checked,
-                TopView = topViewShowCheckBox.Checked,
-                RotatedView = create3dView.Checked
-            };
-
-            _appLogic.Run(formData);
+            _data = GetData();
+            _appLogic.Run(_data);
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -86,9 +51,6 @@ namespace BasicViews
             foreach (View view in drawing.GetSheet().GetViews())
             {
                 var viewDetails = JsonConvert.SerializeObject(view, Formatting.Indented);
-
-                //var sheet = drawing.GetSheet();
-                //var height = sheet.Height;
 
                 var x = trackBar2.Value;
                 var y = trackBar3.Value;
@@ -161,8 +123,6 @@ namespace BasicViews
                 //text.Modify();
 
             }
-
-            //drawing.CommitChanges();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -182,8 +142,6 @@ namespace BasicViews
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //CutViewsInLineWithMain
-
             var drawingHandler = new DrawingHandler();
             var drawing = drawingHandler.GetActiveDrawing();
 
@@ -206,12 +164,7 @@ namespace BasicViews
 
             var loaded = drawing.Layout.LoadAttributes("Assembly11x17");
 
-            var place = drawing.PlaceViews();
-
-
             var modify = drawing.Modify();
-
-            var mSheet = sheet.Modify();
 
             var ajson = JsonConvert.SerializeObject(drawing.Layout,
                 Formatting.Indented);
@@ -254,26 +207,9 @@ namespace BasicViews
             var drawingHandler = new DrawingHandler();
             var drawing = drawingHandler.GetActiveDrawing();
 
-            //var trackBar = sender as DomainUpDown;
-
             foreach (View view in drawing.GetSheet().GetViews())
             {
-                //var viewDetails = JsonConvert.SerializeObject(view,
-                //    Formatting.Indented);
-
-                //var sheet = drawing.GetSheet();
-                //var height = sheet.Height;
-
-                //var x = trackBar2.Value;
-                //var y = trackBar3.Value;
                 var scale = trackBar1.Maximum - int.Parse(domainUpDown1.Text);
-                //var minLength = trackBar5.Value;
-
-                //view.Origin = new Vector(x, y, view.Origin.Z);
-
-                //view.Attributes.Shortening.MinimumLength = minLength;
-
-                //view.Name = textBox1.Text;
                 view.Attributes.Scale = scale;
                 view.Modify();
             }

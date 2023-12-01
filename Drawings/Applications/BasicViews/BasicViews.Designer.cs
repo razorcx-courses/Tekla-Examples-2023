@@ -47,43 +47,43 @@ namespace BasicViews
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.domainUpDown4 = new System.Windows.Forms.DomainUpDown();
             this.domainUpDown3 = new System.Windows.Forms.DomainUpDown();
             this.domainUpDown2 = new System.Windows.Forms.DomainUpDown();
             this.domainUpDown1 = new System.Windows.Forms.DomainUpDown();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.frontViewGroupBox = new System.Windows.Forms.GroupBox();
-            this.titleBlockPanel = new System.Windows.Forms.Panel();
-            this.topViewGroupBox = new System.Windows.Forms.GroupBox();
-            this.bottomViewGroupBox = new System.Windows.Forms.GroupBox();
-            this.endViewGroupBox = new System.Windows.Forms.GroupBox();
-            this.sectionViewGroupBox = new System.Windows.Forms.GroupBox();
-            this.notes1GroupBox = new System.Windows.Forms.GroupBox();
-            this.notes2GroupBox = new System.Windows.Forms.GroupBox();
-            this.notes3GroupBox = new System.Windows.Forms.GroupBox();
+            this.bomPanel = new System.Windows.Forms.Panel();
             this.note3ShowCheckBox = new System.Windows.Forms.CheckBox();
             this.note2ShowCheckBox = new System.Windows.Forms.CheckBox();
             this.notes1ShowCheckBox = new System.Windows.Forms.CheckBox();
             this.sectionViewShowCheckBox = new System.Windows.Forms.CheckBox();
             this.bottomViewCheckBox = new System.Windows.Forms.CheckBox();
-            this.bomPanel = new System.Windows.Forms.Panel();
-            this.notes3ComboBox = new System.Windows.Forms.ComboBox();
+            this.notes2GroupBox = new System.Windows.Forms.GroupBox();
             this.notes2ComboBox = new System.Windows.Forms.ComboBox();
+            this.notes3GroupBox = new System.Windows.Forms.GroupBox();
+            this.notes3ComboBox = new System.Windows.Forms.ComboBox();
+            this.notes1GroupBox = new System.Windows.Forms.GroupBox();
             this.notes1ComboBox = new System.Windows.Forms.ComboBox();
-            this.topViewTextBox = new System.Windows.Forms.TextBox();
-            this.frontViewTextBox = new System.Windows.Forms.TextBox();
-            this.bottomViewTextBox = new System.Windows.Forms.TextBox();
-            this.topViewAttributesComboBox = new System.Windows.Forms.ComboBox();
-            this.frontViewAttributesComboBox = new System.Windows.Forms.ComboBox();
-            this.bottomViewAttributesComboBox = new System.Windows.Forms.ComboBox();
-            this.endViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.sectionViewGroupBox = new System.Windows.Forms.GroupBox();
             this.sectionViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.endViewGroupBox = new System.Windows.Forms.GroupBox();
+            this.endViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.topViewGroupBox = new System.Windows.Forms.GroupBox();
+            this.topViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.topViewTextBox = new System.Windows.Forms.TextBox();
+            this.bottomViewGroupBox = new System.Windows.Forms.GroupBox();
+            this.bottomViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.bottomViewTextBox = new System.Windows.Forms.TextBox();
+            this.titleBlockPanel = new System.Windows.Forms.Panel();
+            this.frontViewGroupBox = new System.Windows.Forms.GroupBox();
+            this.frontViewAttributesComboBox = new System.Windows.Forms.ComboBox();
+            this.frontViewTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
@@ -92,14 +92,14 @@ namespace BasicViews
             this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
-            this.frontViewGroupBox.SuspendLayout();
-            this.topViewGroupBox.SuspendLayout();
-            this.bottomViewGroupBox.SuspendLayout();
-            this.endViewGroupBox.SuspendLayout();
-            this.sectionViewGroupBox.SuspendLayout();
-            this.notes1GroupBox.SuspendLayout();
             this.notes2GroupBox.SuspendLayout();
             this.notes3GroupBox.SuspendLayout();
+            this.notes1GroupBox.SuspendLayout();
+            this.sectionViewGroupBox.SuspendLayout();
+            this.endViewGroupBox.SuspendLayout();
+            this.topViewGroupBox.SuspendLayout();
+            this.bottomViewGroupBox.SuspendLayout();
+            this.frontViewGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -147,6 +147,8 @@ namespace BasicViews
             // frontViewCheckBox
             // 
             this.frontViewCheckBox.AutoSize = true;
+            this.frontViewCheckBox.Checked = true;
+            this.frontViewCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.frontViewCheckBox.Location = new System.Drawing.Point(291, 239);
             this.frontViewCheckBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.frontViewCheckBox.Name = "frontViewCheckBox";
@@ -298,6 +300,42 @@ namespace BasicViews
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(238, 882);
             this.panel1.TabIndex = 205;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(122, 93);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(88, 20);
+            this.label9.TabIndex = 206;
+            this.label9.Text = "Min Length";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(24, 93);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(49, 20);
+            this.label8.TabIndex = 206;
+            this.label8.Text = "Scale";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(119, 23);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(80, 20);
+            this.label7.TabIndex = 206;
+            this.label7.Text = "Position Y";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(20, 23);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(80, 20);
+            this.label6.TabIndex = 206;
+            this.label6.Text = "Position X";
             // 
             // domainUpDown4
             // 
@@ -453,42 +491,6 @@ namespace BasicViews
             this.domainUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.domainUpDown1.SelectedItemChanged += new System.EventHandler(this.domainUpDown1_SelectedItemChanged);
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(20, 23);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(80, 20);
-            this.label6.TabIndex = 206;
-            this.label6.Text = "Position X";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(119, 23);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 20);
-            this.label7.TabIndex = 206;
-            this.label7.Text = "Position Y";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 93);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(49, 20);
-            this.label8.TabIndex = 206;
-            this.label8.Text = "Scale";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(122, 93);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(88, 20);
-            this.label9.TabIndex = 206;
-            this.label9.Text = "Min Length";
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.trackBar5);
@@ -544,114 +546,12 @@ namespace BasicViews
             this.panel5.Size = new System.Drawing.Size(1190, 833);
             this.panel5.TabIndex = 209;
             // 
-            // frontViewGroupBox
+            // bomPanel
             // 
-            this.frontViewGroupBox.BackColor = System.Drawing.Color.Transparent;
-            this.frontViewGroupBox.Controls.Add(this.frontViewAttributesComboBox);
-            this.frontViewGroupBox.Controls.Add(this.frontViewTextBox);
-            this.frontViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frontViewGroupBox.ForeColor = System.Drawing.Color.White;
-            this.frontViewGroupBox.Location = new System.Drawing.Point(320, 230);
-            this.frontViewGroupBox.Name = "frontViewGroupBox";
-            this.frontViewGroupBox.Size = new System.Drawing.Size(558, 156);
-            this.frontViewGroupBox.TabIndex = 0;
-            this.frontViewGroupBox.TabStop = false;
-            this.frontViewGroupBox.Text = "Front View";
-            // 
-            // titleBlockPanel
-            // 
-            this.titleBlockPanel.BackColor = System.Drawing.Color.Black;
-            this.titleBlockPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.titleBlockPanel.Location = new System.Drawing.Point(0, 661);
-            this.titleBlockPanel.Name = "titleBlockPanel";
-            this.titleBlockPanel.Size = new System.Drawing.Size(1190, 172);
-            this.titleBlockPanel.TabIndex = 1;
-            // 
-            // topViewGroupBox
-            // 
-            this.topViewGroupBox.Controls.Add(this.topViewAttributesComboBox);
-            this.topViewGroupBox.Controls.Add(this.topViewTextBox);
-            this.topViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.topViewGroupBox.ForeColor = System.Drawing.Color.White;
-            this.topViewGroupBox.Location = new System.Drawing.Point(320, 24);
-            this.topViewGroupBox.Name = "topViewGroupBox";
-            this.topViewGroupBox.Size = new System.Drawing.Size(558, 154);
-            this.topViewGroupBox.TabIndex = 1;
-            this.topViewGroupBox.TabStop = false;
-            this.topViewGroupBox.Text = "Top View";
-            // 
-            // bottomViewGroupBox
-            // 
-            this.bottomViewGroupBox.Controls.Add(this.bottomViewAttributesComboBox);
-            this.bottomViewGroupBox.Controls.Add(this.bottomViewTextBox);
-            this.bottomViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bottomViewGroupBox.ForeColor = System.Drawing.Color.White;
-            this.bottomViewGroupBox.Location = new System.Drawing.Point(320, 416);
-            this.bottomViewGroupBox.Name = "bottomViewGroupBox";
-            this.bottomViewGroupBox.Size = new System.Drawing.Size(558, 156);
-            this.bottomViewGroupBox.TabIndex = 1;
-            this.bottomViewGroupBox.TabStop = false;
-            this.bottomViewGroupBox.Text = "Bottom View";
-            // 
-            // endViewGroupBox
-            // 
-            this.endViewGroupBox.Controls.Add(this.endViewAttributesComboBox);
-            this.endViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.endViewGroupBox.ForeColor = System.Drawing.Color.White;
-            this.endViewGroupBox.Location = new System.Drawing.Point(38, 230);
-            this.endViewGroupBox.Name = "endViewGroupBox";
-            this.endViewGroupBox.Size = new System.Drawing.Size(218, 156);
-            this.endViewGroupBox.TabIndex = 1;
-            this.endViewGroupBox.TabStop = false;
-            this.endViewGroupBox.Text = "End View";
-            // 
-            // sectionViewGroupBox
-            // 
-            this.sectionViewGroupBox.Controls.Add(this.sectionViewAttributesComboBox);
-            this.sectionViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sectionViewGroupBox.ForeColor = System.Drawing.Color.White;
-            this.sectionViewGroupBox.Location = new System.Drawing.Point(950, 230);
-            this.sectionViewGroupBox.Name = "sectionViewGroupBox";
-            this.sectionViewGroupBox.Size = new System.Drawing.Size(231, 156);
-            this.sectionViewGroupBox.TabIndex = 2;
-            this.sectionViewGroupBox.TabStop = false;
-            this.sectionViewGroupBox.Text = "Section View";
-            // 
-            // notes1GroupBox
-            // 
-            this.notes1GroupBox.Controls.Add(this.notes1ComboBox);
-            this.notes1GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.notes1GroupBox.ForeColor = System.Drawing.Color.White;
-            this.notes1GroupBox.Location = new System.Drawing.Point(950, 416);
-            this.notes1GroupBox.Name = "notes1GroupBox";
-            this.notes1GroupBox.Size = new System.Drawing.Size(231, 239);
-            this.notes1GroupBox.TabIndex = 3;
-            this.notes1GroupBox.TabStop = false;
-            this.notes1GroupBox.Text = "Notes 1";
-            // 
-            // notes2GroupBox
-            // 
-            this.notes2GroupBox.Controls.Add(this.notes2ComboBox);
-            this.notes2GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.notes2GroupBox.ForeColor = System.Drawing.Color.White;
-            this.notes2GroupBox.Location = new System.Drawing.Point(38, 588);
-            this.notes2GroupBox.Name = "notes2GroupBox";
-            this.notes2GroupBox.Size = new System.Drawing.Size(218, 236);
-            this.notes2GroupBox.TabIndex = 4;
-            this.notes2GroupBox.TabStop = false;
-            this.notes2GroupBox.Text = "Notes 2";
-            // 
-            // notes3GroupBox
-            // 
-            this.notes3GroupBox.Controls.Add(this.notes3ComboBox);
-            this.notes3GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.notes3GroupBox.ForeColor = System.Drawing.Color.White;
-            this.notes3GroupBox.Location = new System.Drawing.Point(38, 24);
-            this.notes3GroupBox.Name = "notes3GroupBox";
-            this.notes3GroupBox.Size = new System.Drawing.Size(218, 176);
-            this.notes3GroupBox.TabIndex = 5;
-            this.notes3GroupBox.TabStop = false;
-            this.notes3GroupBox.Text = "Notes 3";
+            this.bomPanel.Location = new System.Drawing.Point(897, 6);
+            this.bomPanel.Name = "bomPanel";
+            this.bomPanel.Size = new System.Drawing.Size(287, 197);
+            this.bomPanel.TabIndex = 6;
             // 
             // note3ShowCheckBox
             // 
@@ -700,24 +600,17 @@ namespace BasicViews
             this.bottomViewCheckBox.TabIndex = 2;
             this.bottomViewCheckBox.UseVisualStyleBackColor = true;
             // 
-            // bomPanel
+            // notes2GroupBox
             // 
-            this.bomPanel.Location = new System.Drawing.Point(897, 6);
-            this.bomPanel.Name = "bomPanel";
-            this.bomPanel.Size = new System.Drawing.Size(287, 197);
-            this.bomPanel.TabIndex = 6;
-            // 
-            // notes3ComboBox
-            // 
-            this.notes3ComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.notes3ComboBox.FormattingEnabled = true;
-            this.notes3ComboBox.Items.AddRange(new object[] {
-            "standard"});
-            this.notes3ComboBox.Location = new System.Drawing.Point(6, 36);
-            this.notes3ComboBox.Name = "notes3ComboBox";
-            this.notes3ComboBox.Size = new System.Drawing.Size(206, 38);
-            this.notes3ComboBox.TabIndex = 1;
-            this.notes3ComboBox.Text = "standard";
+            this.notes2GroupBox.Controls.Add(this.notes2ComboBox);
+            this.notes2GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.notes2GroupBox.ForeColor = System.Drawing.Color.White;
+            this.notes2GroupBox.Location = new System.Drawing.Point(38, 588);
+            this.notes2GroupBox.Name = "notes2GroupBox";
+            this.notes2GroupBox.Size = new System.Drawing.Size(218, 236);
+            this.notes2GroupBox.TabIndex = 4;
+            this.notes2GroupBox.TabStop = false;
+            this.notes2GroupBox.Text = "Notes 2";
             // 
             // notes2ComboBox
             // 
@@ -731,6 +624,42 @@ namespace BasicViews
             this.notes2ComboBox.TabIndex = 2;
             this.notes2ComboBox.Text = "standard";
             // 
+            // notes3GroupBox
+            // 
+            this.notes3GroupBox.Controls.Add(this.notes3ComboBox);
+            this.notes3GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.notes3GroupBox.ForeColor = System.Drawing.Color.White;
+            this.notes3GroupBox.Location = new System.Drawing.Point(38, 24);
+            this.notes3GroupBox.Name = "notes3GroupBox";
+            this.notes3GroupBox.Size = new System.Drawing.Size(218, 176);
+            this.notes3GroupBox.TabIndex = 5;
+            this.notes3GroupBox.TabStop = false;
+            this.notes3GroupBox.Text = "Notes 3";
+            // 
+            // notes3ComboBox
+            // 
+            this.notes3ComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.notes3ComboBox.FormattingEnabled = true;
+            this.notes3ComboBox.Items.AddRange(new object[] {
+            "standard"});
+            this.notes3ComboBox.Location = new System.Drawing.Point(6, 36);
+            this.notes3ComboBox.Name = "notes3ComboBox";
+            this.notes3ComboBox.Size = new System.Drawing.Size(206, 38);
+            this.notes3ComboBox.TabIndex = 1;
+            this.notes3ComboBox.Text = "standard";
+            // 
+            // notes1GroupBox
+            // 
+            this.notes1GroupBox.Controls.Add(this.notes1ComboBox);
+            this.notes1GroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.notes1GroupBox.ForeColor = System.Drawing.Color.White;
+            this.notes1GroupBox.Location = new System.Drawing.Point(950, 416);
+            this.notes1GroupBox.Name = "notes1GroupBox";
+            this.notes1GroupBox.Size = new System.Drawing.Size(231, 239);
+            this.notes1GroupBox.TabIndex = 3;
+            this.notes1GroupBox.TabStop = false;
+            this.notes1GroupBox.Text = "Notes 1";
+            // 
             // notes1ComboBox
             // 
             this.notes1ComboBox.BackColor = System.Drawing.SystemColors.Window;
@@ -743,71 +672,41 @@ namespace BasicViews
             this.notes1ComboBox.TabIndex = 3;
             this.notes1ComboBox.Text = "standard";
             // 
-            // topViewTextBox
+            // sectionViewGroupBox
             // 
-            this.topViewTextBox.Location = new System.Drawing.Point(204, 37);
-            this.topViewTextBox.Multiline = true;
-            this.topViewTextBox.Name = "topViewTextBox";
-            this.topViewTextBox.Size = new System.Drawing.Size(348, 98);
-            this.topViewTextBox.TabIndex = 2;
-            this.topViewTextBox.Text = "Top View Title";
-            this.topViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.sectionViewGroupBox.Controls.Add(this.sectionViewAttributesComboBox);
+            this.sectionViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sectionViewGroupBox.ForeColor = System.Drawing.Color.White;
+            this.sectionViewGroupBox.Location = new System.Drawing.Point(950, 230);
+            this.sectionViewGroupBox.Name = "sectionViewGroupBox";
+            this.sectionViewGroupBox.Size = new System.Drawing.Size(231, 156);
+            this.sectionViewGroupBox.TabIndex = 2;
+            this.sectionViewGroupBox.TabStop = false;
+            this.sectionViewGroupBox.Text = "Section View";
             // 
-            // frontViewTextBox
+            // sectionViewAttributesComboBox
             // 
-            this.frontViewTextBox.Location = new System.Drawing.Point(204, 36);
-            this.frontViewTextBox.Multiline = true;
-            this.frontViewTextBox.Name = "frontViewTextBox";
-            this.frontViewTextBox.Size = new System.Drawing.Size(348, 98);
-            this.frontViewTextBox.TabIndex = 3;
-            this.frontViewTextBox.Text = "Front View Title";
-            this.frontViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // bottomViewTextBox
-            // 
-            this.bottomViewTextBox.Location = new System.Drawing.Point(204, 36);
-            this.bottomViewTextBox.Multiline = true;
-            this.bottomViewTextBox.Name = "bottomViewTextBox";
-            this.bottomViewTextBox.Size = new System.Drawing.Size(348, 98);
-            this.bottomViewTextBox.TabIndex = 4;
-            this.bottomViewTextBox.Text = "Bottom View Title";
-            this.bottomViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // topViewAttributesComboBox
-            // 
-            this.topViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.topViewAttributesComboBox.FormattingEnabled = true;
-            this.topViewAttributesComboBox.Items.AddRange(new object[] {
+            this.sectionViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.sectionViewAttributesComboBox.FormattingEnabled = true;
+            this.sectionViewAttributesComboBox.Items.AddRange(new object[] {
             "standard"});
-            this.topViewAttributesComboBox.Location = new System.Drawing.Point(6, 37);
-            this.topViewAttributesComboBox.Name = "topViewAttributesComboBox";
-            this.topViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
-            this.topViewAttributesComboBox.TabIndex = 2;
-            this.topViewAttributesComboBox.Text = "standard";
+            this.sectionViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
+            this.sectionViewAttributesComboBox.Name = "sectionViewAttributesComboBox";
+            this.sectionViewAttributesComboBox.Size = new System.Drawing.Size(219, 38);
+            this.sectionViewAttributesComboBox.TabIndex = 5;
+            this.sectionViewAttributesComboBox.Text = "standard";
             // 
-            // frontViewAttributesComboBox
+            // endViewGroupBox
             // 
-            this.frontViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.frontViewAttributesComboBox.FormattingEnabled = true;
-            this.frontViewAttributesComboBox.Items.AddRange(new object[] {
-            "standard"});
-            this.frontViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
-            this.frontViewAttributesComboBox.Name = "frontViewAttributesComboBox";
-            this.frontViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
-            this.frontViewAttributesComboBox.TabIndex = 3;
-            this.frontViewAttributesComboBox.Text = "standard";
-            // 
-            // bottomViewAttributesComboBox
-            // 
-            this.bottomViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.bottomViewAttributesComboBox.FormattingEnabled = true;
-            this.bottomViewAttributesComboBox.Items.AddRange(new object[] {
-            "standard"});
-            this.bottomViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
-            this.bottomViewAttributesComboBox.Name = "bottomViewAttributesComboBox";
-            this.bottomViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
-            this.bottomViewAttributesComboBox.TabIndex = 4;
-            this.bottomViewAttributesComboBox.Text = "standard";
+            this.endViewGroupBox.Controls.Add(this.endViewAttributesComboBox);
+            this.endViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.endViewGroupBox.ForeColor = System.Drawing.Color.White;
+            this.endViewGroupBox.Location = new System.Drawing.Point(38, 230);
+            this.endViewGroupBox.Name = "endViewGroupBox";
+            this.endViewGroupBox.Size = new System.Drawing.Size(218, 156);
+            this.endViewGroupBox.TabIndex = 1;
+            this.endViewGroupBox.TabStop = false;
+            this.endViewGroupBox.Text = "End View";
             // 
             // endViewAttributesComboBox
             // 
@@ -821,17 +720,120 @@ namespace BasicViews
             this.endViewAttributesComboBox.TabIndex = 4;
             this.endViewAttributesComboBox.Text = "standard";
             // 
-            // sectionViewAttributesComboBox
+            // topViewGroupBox
             // 
-            this.sectionViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.sectionViewAttributesComboBox.FormattingEnabled = true;
-            this.sectionViewAttributesComboBox.Items.AddRange(new object[] {
+            this.topViewGroupBox.Controls.Add(this.topViewAttributesComboBox);
+            this.topViewGroupBox.Controls.Add(this.topViewTextBox);
+            this.topViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.topViewGroupBox.ForeColor = System.Drawing.Color.White;
+            this.topViewGroupBox.Location = new System.Drawing.Point(320, 24);
+            this.topViewGroupBox.Name = "topViewGroupBox";
+            this.topViewGroupBox.Size = new System.Drawing.Size(558, 154);
+            this.topViewGroupBox.TabIndex = 1;
+            this.topViewGroupBox.TabStop = false;
+            this.topViewGroupBox.Text = "Top View";
+            // 
+            // topViewAttributesComboBox
+            // 
+            this.topViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.topViewAttributesComboBox.FormattingEnabled = true;
+            this.topViewAttributesComboBox.Items.AddRange(new object[] {
             "standard"});
-            this.sectionViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
-            this.sectionViewAttributesComboBox.Name = "sectionViewAttributesComboBox";
-            this.sectionViewAttributesComboBox.Size = new System.Drawing.Size(219, 38);
-            this.sectionViewAttributesComboBox.TabIndex = 5;
-            this.sectionViewAttributesComboBox.Text = "standard";
+            this.topViewAttributesComboBox.Location = new System.Drawing.Point(6, 37);
+            this.topViewAttributesComboBox.Name = "topViewAttributesComboBox";
+            this.topViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
+            this.topViewAttributesComboBox.TabIndex = 2;
+            this.topViewAttributesComboBox.Text = "standard";
+            // 
+            // topViewTextBox
+            // 
+            this.topViewTextBox.Location = new System.Drawing.Point(204, 37);
+            this.topViewTextBox.Multiline = true;
+            this.topViewTextBox.Name = "topViewTextBox";
+            this.topViewTextBox.Size = new System.Drawing.Size(348, 98);
+            this.topViewTextBox.TabIndex = 2;
+            this.topViewTextBox.Text = "Top View Title";
+            this.topViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // bottomViewGroupBox
+            // 
+            this.bottomViewGroupBox.Controls.Add(this.bottomViewAttributesComboBox);
+            this.bottomViewGroupBox.Controls.Add(this.bottomViewTextBox);
+            this.bottomViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bottomViewGroupBox.ForeColor = System.Drawing.Color.White;
+            this.bottomViewGroupBox.Location = new System.Drawing.Point(320, 416);
+            this.bottomViewGroupBox.Name = "bottomViewGroupBox";
+            this.bottomViewGroupBox.Size = new System.Drawing.Size(558, 156);
+            this.bottomViewGroupBox.TabIndex = 1;
+            this.bottomViewGroupBox.TabStop = false;
+            this.bottomViewGroupBox.Text = "Bottom View";
+            // 
+            // bottomViewAttributesComboBox
+            // 
+            this.bottomViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.bottomViewAttributesComboBox.FormattingEnabled = true;
+            this.bottomViewAttributesComboBox.Items.AddRange(new object[] {
+            "standard"});
+            this.bottomViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
+            this.bottomViewAttributesComboBox.Name = "bottomViewAttributesComboBox";
+            this.bottomViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
+            this.bottomViewAttributesComboBox.TabIndex = 4;
+            this.bottomViewAttributesComboBox.Text = "standard";
+            // 
+            // bottomViewTextBox
+            // 
+            this.bottomViewTextBox.Location = new System.Drawing.Point(204, 36);
+            this.bottomViewTextBox.Multiline = true;
+            this.bottomViewTextBox.Name = "bottomViewTextBox";
+            this.bottomViewTextBox.Size = new System.Drawing.Size(348, 98);
+            this.bottomViewTextBox.TabIndex = 4;
+            this.bottomViewTextBox.Text = "Bottom View Title";
+            this.bottomViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // titleBlockPanel
+            // 
+            this.titleBlockPanel.BackColor = System.Drawing.Color.Black;
+            this.titleBlockPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.titleBlockPanel.Location = new System.Drawing.Point(0, 661);
+            this.titleBlockPanel.Name = "titleBlockPanel";
+            this.titleBlockPanel.Size = new System.Drawing.Size(1190, 172);
+            this.titleBlockPanel.TabIndex = 1;
+            // 
+            // frontViewGroupBox
+            // 
+            this.frontViewGroupBox.BackColor = System.Drawing.Color.Transparent;
+            this.frontViewGroupBox.Controls.Add(this.frontViewAttributesComboBox);
+            this.frontViewGroupBox.Controls.Add(this.frontViewTextBox);
+            this.frontViewGroupBox.Font = new System.Drawing.Font("Nirmala UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frontViewGroupBox.ForeColor = System.Drawing.Color.White;
+            this.frontViewGroupBox.Location = new System.Drawing.Point(320, 230);
+            this.frontViewGroupBox.Name = "frontViewGroupBox";
+            this.frontViewGroupBox.Size = new System.Drawing.Size(558, 156);
+            this.frontViewGroupBox.TabIndex = 0;
+            this.frontViewGroupBox.TabStop = false;
+            this.frontViewGroupBox.Text = "Front View";
+            // 
+            // frontViewAttributesComboBox
+            // 
+            this.frontViewAttributesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.frontViewAttributesComboBox.FormattingEnabled = true;
+            this.frontViewAttributesComboBox.Items.AddRange(new object[] {
+            "standard"});
+            this.frontViewAttributesComboBox.Location = new System.Drawing.Point(6, 36);
+            this.frontViewAttributesComboBox.Name = "frontViewAttributesComboBox";
+            this.frontViewAttributesComboBox.Size = new System.Drawing.Size(192, 38);
+            this.frontViewAttributesComboBox.TabIndex = 3;
+            this.frontViewAttributesComboBox.Text = "standard";
+            // 
+            // frontViewTextBox
+            // 
+            this.frontViewTextBox.Location = new System.Drawing.Point(204, 36);
+            this.frontViewTextBox.Multiline = true;
+            this.frontViewTextBox.Name = "frontViewTextBox";
+            this.frontViewTextBox.Size = new System.Drawing.Size(348, 98);
+            this.frontViewTextBox.TabIndex = 3;
+            this.frontViewTextBox.Text = "Front View Title";
+            this.frontViewTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // BasicViews
             // 
@@ -861,17 +863,17 @@ namespace BasicViews
             this.panel4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
-            this.frontViewGroupBox.ResumeLayout(false);
-            this.frontViewGroupBox.PerformLayout();
+            this.notes2GroupBox.ResumeLayout(false);
+            this.notes3GroupBox.ResumeLayout(false);
+            this.notes1GroupBox.ResumeLayout(false);
+            this.sectionViewGroupBox.ResumeLayout(false);
+            this.endViewGroupBox.ResumeLayout(false);
             this.topViewGroupBox.ResumeLayout(false);
             this.topViewGroupBox.PerformLayout();
             this.bottomViewGroupBox.ResumeLayout(false);
             this.bottomViewGroupBox.PerformLayout();
-            this.endViewGroupBox.ResumeLayout(false);
-            this.sectionViewGroupBox.ResumeLayout(false);
-            this.notes1GroupBox.ResumeLayout(false);
-            this.notes2GroupBox.ResumeLayout(false);
-            this.notes3GroupBox.ResumeLayout(false);
+            this.frontViewGroupBox.ResumeLayout(false);
+            this.frontViewGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

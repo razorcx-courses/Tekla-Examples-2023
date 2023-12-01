@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using Tekla.Structures;
 using Tekla.Structures.Drawing;
 using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
@@ -20,85 +20,96 @@ namespace BasicViews
         private DrawingHelper _drawingHelper = new DrawingHelper();
         private PartFetcher _partFetcher = new PartFetcher();
 
-        public void Run(FormData formData)
+        public void Run(Data formData)
         {
-            var current = _model.GetWorkPlaneHandler().GetCurrentTransformationPlane(); // We use global transformation
-
             try
             {
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane()); // We use global transformation
                 var selectedModelObjects = new TSMUI.ModelObjectSelector().GetSelectedObjects();
+                selectedModelObjects.MoveNext();
 
-                AssemblyDrawing myDrawing = null;
+                var currentObject = selectedModelObjects.Current;
 
-                while (selectedModelObjects.MoveNext())
+                var part = currentObject as Part;
+                if (part == null) return;
+
+                var assembly = part.GetAssembly();
+                if (assembly == null) return;
+
+                var assemblyDrawing = new AssemblyDrawing(assembly.Identifier, "All-Views");
+                var insert = assemblyDrawing.Insert();
+
+                var views = new Dictionary<View.ViewTypes, View>();
+                foreach (View view in assemblyDrawing.GetSheet().GetViews())
                 {
-                    var currentObject = selectedModelObjects.Current;
-
-                    var drawingName = "Part basic views" + currentObject.Identifier;
-
-                    var modelObjectCoordSys = GetCoordinateSystemOfSelectedObject(currentObject);
-                    var modelObjectName = GetNameOfSelectedObject(currentObject);
-
-                    // Creates new empty general arrangement drawing
-
-                    var part = currentObject as Part;
-                    var assy = part.GetAssembly();
-                    myDrawing = new AssemblyDrawing(assy.Identifier, "All-Views");
-                    var pl1 = myDrawing.PlaceViews();
-                    //myDrawing = new GADrawing(drawingName, "standard");
-                    myDrawing.Insert();
-
-                    //if (formData.OpenDrawing)
-                    //    _drawingHandler.SetActiveDrawing(myDrawing, true); // Open drawing in editor
-                    //else
-                    //    _drawingHandler.SetActiveDrawing(myDrawing, false); // Open drawing in invisible mode. When drawing is opened in invisible mode, it must always be saved and closed.
-
-                    // Handle different model object types
-
-                    //fetch parts
-                    //var parts = _partFetcher.FetchParts(selectedModelObjects);
-
-                    //_drawingHelper.CreateViews(modelObjectCoordSys, modelObjectName, myDrawing, parts, formData);
-
-                    var pl2 = myDrawing.PlaceViews();
-                    myDrawing.Modify();
-
-                    myDrawing.CommitChanges();
-
-                    myDrawing.Select();
-                    var pl3 = myDrawing.PlaceViews();
-                    myDrawing.Modify();
-                    myDrawing.CommitChanges();
-
-                    _drawingHandler.CloseActiveDrawing(true); // Save and close the active drawing
+                    views.Add(view.ViewType, view);
                 }
 
-                foreach (View view in myDrawing.GetSheet().GetViews())
+                var sheet = assemblyDrawing.GetSheet();
+                var height = sheet.Height;
+
+                views.Keys.ToList().ForEach(type =>
                 {
-                    var viewDetails = JsonConvert.SerializeObject(view, Formatting.Indented);
+                    var view = views[type];
 
-                    var sheet = myDrawing.GetSheet();
-                    var height = sheet.Height;
+                    var x = 0;
+                    var y = 500;
 
-                    view.Origin = new Point(40, height-50, view.Origin.Z);
-                    view.Name = "This is the BEAM name which can be changed with API";
-                    //view.Attributes.PartialProfileLength = 100;
-                    view.Attributes.Scale = 10;
-                    view.Modify();
-                    
-                }
+                    switch (type)
+                    {
+                        case View.ViewTypes.FrontView:
+                            if (!formData.showFrontView)
+                            {
+                                //view.Origin = new Point(x, y, 0);
+                                // view.Modify();
+                                view.Delete();
+                            }
+                            break;
+                        case View.ViewTypes.TopView:
+                            if (!formData.showTopView)
+                            {
+                                //view.Origin = new Point(x, y, 0);
+                                //view.Modify();
+                                view.Delete();
+                            }
+                            break;
+                        case View.ViewTypes.BottomView:
+                            if (!formData.showBottomView)
+                            {
+                                //view.Origin = new Point(x, y, 0);
+                                //view.Modify();
+                                view.Delete();
+                            }
+                            break;
+                        case View.ViewTypes.SectionView:
+                            if (!formData.showSectionView)
+                            {
+                                //view.Origin = new Point(x, y, 0);
+                                //view.Modify();
+                                view.Delete();
+                            }
+                            break;
+                        case View.ViewTypes.EndView:
+                            if (!formData.showEndView)
+                            {
+                                //view.Origin = new Point(x, y, 0);
+                                //view.Modify();
+                                view.Delete();
+                            }
+                            break;
 
-                myDrawing.CommitChanges();
+                    }
+                });
 
-                if (myDrawing != null && formData.OpenDrawing)
-                    _drawingHandler.SetActiveDrawing(myDrawing);
+                assemblyDrawing.Modify();
 
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
+                _drawingHandler.SetActiveDrawing(assemblyDrawing);
+
+                var pl = assemblyDrawing.PlaceViews();
+                var save = _drawingHandler.SaveActiveDrawing();
+
             }
             catch (Exception exception)
             {
-                _model.GetWorkPlaneHandler().SetCurrentTransformationPlane(current); // return original transformation
                 MessageBox.Show(exception.ToString());
             }
         }
