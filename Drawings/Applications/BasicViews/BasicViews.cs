@@ -67,9 +67,9 @@ namespace BasicViews
             var formData = new FormData
             {
                 OpenDrawing = openDrawings.Checked,
-                EndView = createEndView.Checked,
-                FrontView = createFrontView.Checked,
-                TopView = createTopView.Checked,
+                EndView = endViewShowCheckBox.Checked,
+                FrontView = frontViewCheckBox.Checked,
+                TopView = topViewShowCheckBox.Checked,
                 RotatedView = create3dView.Checked
             };
 
