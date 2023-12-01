@@ -122,7 +122,7 @@ partial class SpliceConnection
             this.structuresExtender.SetAttributeTypeName(this.okApplyModifyGetOnOffCancel1, null);
             this.structuresExtender.SetBindPropertyName(this.okApplyModifyGetOnOffCancel1, null);
             this.okApplyModifyGetOnOffCancel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.okApplyModifyGetOnOffCancel1.Location = new System.Drawing.Point(0, 603);
+            this.okApplyModifyGetOnOffCancel1.Location = new System.Drawing.Point(0, 518);
             this.okApplyModifyGetOnOffCancel1.Margin = new System.Windows.Forms.Padding(6);
             this.okApplyModifyGetOnOffCancel1.Name = "okApplyModifyGetOnOffCancel1";
             this.okApplyModifyGetOnOffCancel1.Size = new System.Drawing.Size(784, 45);
@@ -159,11 +159,12 @@ partial class SpliceConnection
             this.structuresExtender.SetBindPropertyName(this.tabControl1, null);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(0, 75);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 66);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(784, 518);
+            this.tabControl1.Size = new System.Drawing.Size(784, 452);
             this.tabControl1.TabIndex = 10;
             // 
             // tabPage1
@@ -182,7 +183,7 @@ partial class SpliceConnection
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabPage1.Size = new System.Drawing.Size(776, 485);
+            this.tabPage1.Size = new System.Drawing.Size(776, 175);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "albl_Parameters";
             // 
@@ -251,7 +252,7 @@ partial class SpliceConnection
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabPage2.Size = new System.Drawing.Size(776, 485);
+            this.tabPage2.Size = new System.Drawing.Size(776, 419);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "General";
             // 
@@ -591,7 +592,7 @@ partial class SpliceConnection
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.structuresExtender.SetBindPropertyName(this, null);
-            this.ClientSize = new System.Drawing.Size(784, 648);
+            this.ClientSize = new System.Drawing.Size(784, 563);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.saveLoad1);
             this.Controls.Add(this.okApplyModifyGetOnOffCancel1);

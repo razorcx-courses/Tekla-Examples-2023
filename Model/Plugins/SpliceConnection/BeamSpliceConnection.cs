@@ -8,7 +8,7 @@ using TSMUI = Tekla.Structures.Model.UI;
 
 namespace SpliceConn
 {
-    // If the plug-in is inherited from ConnectionPluginBase,
+    // If the plug-in is inherited from ConnectionBase,
     // *** the dialog class name must be the same as plug-in name ***
 
     [Plugin("SpliceConnection")] //Name of the connection in the catalog
@@ -63,7 +63,7 @@ namespace SpliceConn
             {
                 //only required for debugging as a windows forms app
                 //automatic when used as a connection plugin
-                _model.CommitChanges();
+                if(Debug) _model.CommitChanges();
             }
         }
         private void SelectBeamsForConnectionPlugin(out Beam primaryBeam, out Beam secondaryBeam)

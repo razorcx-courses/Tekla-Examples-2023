@@ -6,7 +6,6 @@ namespace SpliceConn
     public class SpliceConnectionBuilder
     {
         private readonly Model _model = new Model();
-        private Data _data;
         private const double GAP = 10.0;
 
         private readonly FittingBuilder _fittingBuilder = new FittingBuilder();
@@ -17,19 +16,17 @@ namespace SpliceConn
         {
             if (primaryBeam == null || secondaryBeam == null) return false;
 
-            _data = data;
-
             if (!TeklaHelper.AreProfilesEqual(primaryBeam, secondaryBeam)) return false;
 
             if (!TeklaHelper.AreBeamsAligned(primaryBeam, secondaryBeam)) return false;
 
-            return CreateSpliceConnection(primaryBeam, secondaryBeam, _model, _data.PlateLength, _data.BoltStandard);
+            return CreateSpliceConnection(primaryBeam, secondaryBeam, data.PlateLength, data.BoltStandard);
         }
 
-        private bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam, Model model,
+        private bool CreateSpliceConnection(Beam primaryBeam, Beam secondaryBeam,
             double plateLength, string boltStandard)
         {
-            var originalTransformationPlane = model.GetTransformationPlane();
+            var originalTransformationPlane = _model.GetTransformationPlane();
 
             try
             {
@@ -53,13 +50,13 @@ namespace SpliceConn
                 var plateHeight = beamHeight - 2 * edgeDistance;
 
                 var coordSys = TeklaHelper.GetCoordinateSystem(primaryBeam, secondaryBeam);
-                model.SetTransformationPlane(coordSys);
+                _model.SetTransformationPlane(coordSys);
 
                 _plateBuilder.CreatePlates(plateLength, webThickness, beamHeight, edgeDistance, 
                     out var plate1, out var plate2);
 
                 //change coordinate system for bolt creation
-                model.SetTransformationPlane(plate1.GetCoordinateSystem());
+                _model.SetTransformationPlane(plate1.GetCoordinateSystem());
 
                 //create two boltArrays to connect the plates
                 return _boltBuilder.CreateBoltArray(primaryBeam, plate1, plate2, plateHeight, 
@@ -73,7 +70,7 @@ namespace SpliceConn
             }
             finally
             {
-                model.SetTransformationPlane(originalTransformationPlane);
+                _model.SetTransformationPlane(originalTransformationPlane);
             }
         }
     }

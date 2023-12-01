@@ -11,6 +11,7 @@ namespace SpliceConn
         public bool CreateGapBetweenBeams(Beam primaryBeam, Beam secondaryBeam, double gap)
         {
             if (primaryBeam == null || secondaryBeam == null) return false;
+            if (gap <= 1) return false;
 
             //find gap vector distances
             var primaryBeamGapVector = new Vector(primaryBeam.EndPoint - primaryBeam.StartPoint);

@@ -6,7 +6,7 @@ namespace SpliceConn
 {
     public class TeklaHelper
     {
-        private const double EPSILON = 0.001;
+        public const double EPSILON = 0.001;
 
         public static bool AreProfilesEqual(Beam primaryBeam, Beam secondaryBeam)
         {
