@@ -111,6 +111,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingMarkExample", "Drawi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphicsDrawerChatGPT", "GraphicsDrawerChatGPT\GraphicsDrawerChatGPT.csproj", "{2126EA8E-E61C-4A84-99B2-1978E96FA124}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateComponent", "CreateComponent\CreateComponent.csproj", "{0D7DAC82-A49A-4DFA-B587-410B584C6250}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -549,6 +551,14 @@ Global
 		{2126EA8E-E61C-4A84-99B2-1978E96FA124}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2126EA8E-E61C-4A84-99B2-1978E96FA124}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2126EA8E-E61C-4A84-99B2-1978E96FA124}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0D7DAC82-A49A-4DFA-B587-410B584C6250}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
