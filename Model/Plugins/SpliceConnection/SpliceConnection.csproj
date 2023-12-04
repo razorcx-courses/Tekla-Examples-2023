@@ -142,7 +142,9 @@
     <Content Include="Resources\prtyp_tree_9.bmp" />
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="PluginFormBase_README.md" />
     <None Include="Resources\UpDirection.PNG" />
+    <None Include="Vector_README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
