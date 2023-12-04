@@ -6,6 +6,7 @@ using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Solid;
 using TSM = Tekla.Structures.Model;
 using Tekla.Structures.Model;
+using System.Collections.Generic;
 
 namespace ObjectTestApplication
 {
@@ -81,51 +82,51 @@ namespace ObjectTestApplication
             ((System.ComponentModel.ISupportInitialize)(this._statusBarPanel2)).BeginInit();
             this.SuspendLayout();
             // 
-            // statusBar1
+            // _statusBar1
             // 
-            this._statusBar1.Location = new System.Drawing.Point(0, 523);
+            this._statusBar1.Location = new System.Drawing.Point(0, 278);
             this._statusBar1.Name = "_statusBar1";
             this._statusBar1.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this._statusBarPanel1,
             this._statusBarPanel2});
             this._statusBar1.ShowPanels = true;
-            this._statusBar1.Size = new System.Drawing.Size(568, 25);
+            this._statusBar1.Size = new System.Drawing.Size(693, 32);
             this._statusBar1.TabIndex = 1;
             // 
-            // statusBarPanel1
+            // _statusBarPanel1
             // 
             this._statusBarPanel1.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
             this._statusBarPanel1.Name = "_statusBarPanel1";
             this._statusBarPanel1.Text = "Objecttest started..";
-            this._statusBarPanel1.Width = 447;
+            this._statusBarPanel1.Width = 568;
             // 
-            // statusBarPanel2
+            // _statusBarPanel2
             // 
             this._statusBarPanel2.Alignment = System.Windows.Forms.HorizontalAlignment.Right;
             this._statusBarPanel2.Name = "_statusBarPanel2";
             // 
-            // textBox1
+            // _textBox1
             // 
             this._textBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this._textBox1.Location = new System.Drawing.Point(0, 207);
+            this._textBox1.Location = new System.Drawing.Point(0, -122);
             this._textBox1.MaxLength = 2147483647;
             this._textBox1.Multiline = true;
             this._textBox1.Name = "_textBox1";
             this._textBox1.ReadOnly = true;
             this._textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this._textBox1.Size = new System.Drawing.Size(568, 316);
+            this._textBox1.Size = new System.Drawing.Size(693, 400);
             this._textBox1.TabIndex = 5;
             // 
-            // button6
+            // _button6
             // 
-            this._button6.Location = new System.Drawing.Point(416, 28);
+            this._button6.Location = new System.Drawing.Point(446, 35);
             this._button6.Name = "_button6";
-            this._button6.Size = new System.Drawing.Size(144, 72);
+            this._button6.Size = new System.Drawing.Size(192, 92);
             this._button6.TabIndex = 7;
             this._button6.Text = "Run Selected Tests";
             this._button6.Click += new System.EventHandler(this.button6_Click);
             // 
-            // checkedListBox1
+            // _checkedListBox1
             // 
             this._checkedListBox1.CheckOnClick = true;
             this._checkedListBox1.ColumnWidth = 140;
@@ -146,26 +147,26 @@ namespace ObjectTestApplication
             "EnumerationTest",
             "SolidTests",
             "ComponentTests"});
-            this._checkedListBox1.Location = new System.Drawing.Point(19, 28);
+            this._checkedListBox1.Location = new System.Drawing.Point(25, 35);
             this._checkedListBox1.MultiColumn = true;
             this._checkedListBox1.Name = "_checkedListBox1";
-            this._checkedListBox1.Size = new System.Drawing.Size(346, 157);
+            this._checkedListBox1.Size = new System.Drawing.Size(389, 211);
             this._checkedListBox1.TabIndex = 9;
             this._checkedListBox1.ThreeDCheckBoxes = true;
             // 
-            // button1
+            // _button1
             // 
-            this._button1.Location = new System.Drawing.Point(416, 120);
+            this._button1.Location = new System.Drawing.Point(446, 152);
             this._button1.Name = "_button1";
-            this._button1.Size = new System.Drawing.Size(144, 65);
+            this._button1.Size = new System.Drawing.Size(192, 82);
             this._button1.TabIndex = 10;
             this._button1.Text = "Clear Model";
             this._button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // Form1
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 15);
-            this.ClientSize = new System.Drawing.Size(568, 548);
+            this.AutoScaleBaseSize = new System.Drawing.Size(8, 19);
+            this.ClientSize = new System.Drawing.Size(693, 310);
             this.Controls.Add(this._button1);
             this.Controls.Add(this._checkedListBox1);
             this.Controls.Add(this._button6);
@@ -207,63 +208,100 @@ namespace ObjectTestApplication
         /// </summary>
         private void BeamTest()
         {
-            // Initialize variables
-            double test = 0;
-
-            // Output a message indicating the start of BeamTest
             WriteLine("Starting BeamTest...");
 
-            // Create two points to define the start and end of the Beam
-            var point = new Point(0, 0, 0);
-            var point2 = new Point(1000, 0, 0);
-
-            // Create a Beam object using the defined points
-            var beam = new Beam(point, point2);
-
-            // Set properties of the Beam object
-            beam.Profile.ProfileString = "L60*6";
-            beam.Material.MaterialString = "Steel_Undefined";
-            beam.Finish = "PAINT";
-
-            // Attempt to insert the Beam object into the model
-            if (!beam.Insert())
+            // Create a Beam object and set its properties
+            var beam = CreateAndInsertBeam();
+            if (beam == null)
             {
-                // Output a failure message if the insertion fails
-                WriteLine("BeamTest failed - unable to create beam");
-                MessageBox.Show("Insert failed!");
                 return;
             }
-            else
-            {
-                // Add the successfully inserted Beam object to an object list
-                _objectList.Add(beam);
-            }
 
-            // Retrieve and display specific properties of the Beam object
-            if (beam.GetReportProperty("PROFILE.FLANGE_THICKNESS_1", ref test))
-                WriteLine("PROFILE.FLANGE_THICKNESS_1 returned " + test.ToString());
-
-            if (beam.GetReportProperty("PROFILE.FLANGE_THICKNESS_2", ref test))
-                WriteLine("PROFILE.FLANGE_THICKNESS_2 returned " + test.ToString());
+            // Display specific properties of the Beam object
+            DisplayBeamProperties(beam);
 
             // Output the identifier of the inserted Beam object
-            WriteLine(beam.Identifier.ID + " Inserted");
+            WriteLine($"{beam.Identifier.ID} Inserted");
 
             // Attempt to select the Beam object
             if (!beam.Select())
+            {
                 MessageBox.Show("Select failed!");
+                return;
+            }
 
             // Translate the start and end points of the Beam object
-            beam.StartPoint.Translate(0, 1000, 0);
-            beam.EndPoint.Translate(0, 1000, 0);
+            TranslateBeamPoints(beam, 0, 1000, 0);
 
             // Attempt to modify the Beam object
             if (!beam.Modify())
+            {
                 MessageBox.Show("Modify failed!");
+                return;
+            }
 
-            // Output a completion message for BeamTest
             WriteLine("BeamTest complete!");
         }
+
+        /// <summary>
+        /// Creates and inserts a Beam object with predefined points and properties.
+        /// </summary>
+        /// <returns>The created Beam object or null if unsuccessful.</returns>
+        private Beam CreateAndInsertBeam()
+        {
+            var startPoint = new Point(0, 0, 0);
+            var endPoint = new Point(1000, 0, 0);
+
+            var beam = new Beam(startPoint, endPoint)
+            {
+                Profile = { ProfileString = "L60*6" },
+                Material = { MaterialString = "Steel_Undefined" },
+                Finish = "PAINT"
+            };
+
+            if (!beam.Insert())
+            {
+                WriteLine("BeamTest failed - unable to create beam");
+                MessageBox.Show("Insert failed!");
+                return null;
+            }
+
+            _objectList.Add(beam);
+            return beam;
+        }
+
+        /// <summary>
+        /// Displays specific properties of the Beam object.
+        /// </summary>
+        /// <param name="beam">The Beam object.</param>
+        private void DisplayBeamProperties(Beam beam)
+        {
+            double test = 0;
+
+            if (beam.GetReportProperty("PROFILE.FLANGE_THICKNESS_1", ref test))
+            {
+                WriteLine($"PROFILE.FLANGE_THICKNESS_1 returned {test}");
+            }
+
+            if (beam.GetReportProperty("PROFILE.FLANGE_THICKNESS_2", ref test))
+            {
+                WriteLine($"PROFILE.FLANGE_THICKNESS_2 returned {test}");
+            }
+        }
+
+        /// <summary>
+        /// Translates the start and end points of the Beam object.
+        /// </summary>
+        /// <param name="beam">The Beam object.</param>
+        /// <param name="translationX">The translation along the X-axis.</param>
+        /// <param name="translationY">The translation along the Y-axis.</param>
+        /// <param name="translationZ">The translation along the Z-axis.</param>
+        private void TranslateBeamPoints(Beam beam, double translationX, double translationY, double translationZ)
+        {
+            beam.StartPoint.Translate(translationX, translationY, translationZ);
+            beam.EndPoint.Translate(translationX, translationY, translationZ);
+        }
+
 
 
         /// <summary>
@@ -271,21 +309,56 @@ namespace ObjectTestApplication
         /// </summary>
         private void PolyBeamTest()
         {
-            // Display message indicating the start of the PolyBeamTest.
-            WriteLine("PolyBeamTest complete!");
+            WriteLine("Starting PolyBeamTest...");
 
             // Create ContourPoints for PolyBeam contour.
-            var point = new ContourPoint(new Point(0, 2000, 0), null);
-            var point2 = new ContourPoint(new Point(2000, 2000, 0), new Chamfer(0, 0, Chamfer.ChamferTypeEnum.CHAMFER_ARC_POINT));
-            var point3 = new ContourPoint(new Point(0, 4000, 0), null);
+            var contourPoints = CreateContourPoints();
 
+            // Create and insert a PolyBeam instance.
+            var polyBeam = CreateAndInsertPolyBeam(contourPoints);
+            if (polyBeam == null)
+            {
+                return;
+            }
+
+            // Select the PolyBeam and display completion message.
+            if (!polyBeam.Select())
+            {
+                MessageBox.Show("Select failed!");
+                return;
+            }
+
+            WriteLine("PolyBeamTest complete!");
+        }
+
+        /// <summary>
+        /// Creates ContourPoints for PolyBeam contour.
+        /// </summary>
+        /// <returns>The list of ContourPoints.</returns>
+        private List<ContourPoint> CreateContourPoints()
+        {
+            var contourPoints = new List<ContourPoint>
+    {
+        new ContourPoint(new Point(0, 2000, 0), null),
+        new ContourPoint(new Point(2000, 2000, 0), new Chamfer(0, 0, Chamfer.ChamferTypeEnum.CHAMFER_ARC_POINT)),
+        new ContourPoint(new Point(0, 4000, 0), null)
+    };
+
+            return contourPoints;
+        }
+
+        /// <summary>
+        /// Creates and inserts a PolyBeam instance.
+        /// </summary>
+        /// <param name="contourPoints">The list of ContourPoints for PolyBeam.</param>
+        /// <returns>The created PolyBeam or null if unsuccessful.</returns>
+        private PolyBeam CreateAndInsertPolyBeam(List<ContourPoint> contourPoints)
+        {
             // Create a PolyBeam instance.
             var polyBeam = new PolyBeam();
 
             // Add ContourPoints to the PolyBeam.
-            polyBeam.AddContourPoint(point);
-            polyBeam.AddContourPoint(point2);
-            polyBeam.AddContourPoint(point3);
+            polyBeam.Contour.ContourPoints.Add(contourPoints);
 
             // Set properties of the PolyBeam.
             polyBeam.Profile.ProfileString = "HI400-15-20*400";
@@ -297,19 +370,13 @@ namespace ObjectTestApplication
             {
                 WriteLine("PolyBeamTest failed - unable to create polybeam");
                 MessageBox.Show("Insert failed!");
-                return;
-            }
-            else
-            {
-                // Add the PolyBeam to the ObjectList.
-                _objectList.Add(polyBeam);
+                return null;
             }
 
-            // Select the PolyBeam and display completion message.
-            if (!polyBeam.Select())
-                MessageBox.Show("Select failed!");
+            // Add the PolyBeam to the ObjectList.
+            _objectList.Add(polyBeam);
 
-            WriteLine("PolyBeamTest complete!");
+            return polyBeam;
         }
 
         /// <summary>
@@ -317,55 +384,88 @@ namespace ObjectTestApplication
         /// </summary>
         private void ContourPlateTest()
         {
-            // Display message indicating the start of ContourPlateTest.
             WriteLine("Starting ContourPlateTest...");
 
             // Create ContourPoints for ContourPlate contour.
-            var point = new ContourPoint(new Point(0, 4000, 0), null);
-            var point2 = new ContourPoint(new Point(2000, 4000, 0), new Chamfer(0, 0, Chamfer.ChamferTypeEnum.CHAMFER_ARC_POINT));
-            var point3 = new ContourPoint(new Point(0, 6000, 0), null);
+            var contourPoints = CreateContourPointsForContourPlate();
 
-            // Set specific properties for ContourPlate.
-            point2.Chamfer.DZ1 = 2500;
-            point2.Chamfer.DZ2 = 300;
-
-            // Create a ContourPlate instance.
-            var cp = new ContourPlate();
-
-            // Add ContourPoints to the ContourPlate.
-            cp.AddContourPoint(point);
-            cp.AddContourPoint(point2);
-            cp.AddContourPoint(point3);
-
-            // Set properties of the ContourPlate.
-            cp.Profile.ProfileString = "PL10";
-            cp.Finish = "FOO";
-            cp.Material.MaterialString = "Concrete_Undefined";
-            cp.Name = "FOOSLAB";
-
-            // Insert the ContourPlate and handle failure.
-            if (!cp.Insert())
+            // Create and insert a ContourPlate instance.
+            var contourPlate = CreateAndInsertContourPlate(contourPoints);
+            if (contourPlate == null)
             {
-                WriteLine("PolyBeamTest failed - unable to create polybeam");
-                MessageBox.Show("Insert failed!");
                 return;
             }
-            else
+
+            // Select, modify, and display completion message.
+            if (!contourPlate.Select())
             {
-                // Add the ContourPlate to the ObjectList.
-                _objectList.Add(cp);
+                MessageBox.Show("Select failed!");
+                return;
             }
 
-            // Select and modify the ContourPlate, then display completion message.
-            if (!cp.Select())
-                MessageBox.Show("Select failed!");
-
-            if (!cp.Modify())
+            if (!contourPlate.Modify())
+            {
                 MessageBox.Show("Modify failed!");
+                return;
+            }
 
-            WriteLine(cp.Identifier.ID + " Inserted");
+            WriteLine(contourPlate.Identifier.ID + " Inserted");
             WriteLine("ContourPlateTest complete!");
         }
+
+        /// <summary>
+        /// Creates ContourPoints for ContourPlate contour.
+        /// </summary>
+        /// <returns>The list of ContourPoints.</returns>
+        private List<ContourPoint> CreateContourPointsForContourPlate()
+        {
+            var contourPoints = new List<ContourPoint>
+            {
+                new ContourPoint(new Point(0, 4000, 0), null),
+                new ContourPoint(new Point(2000, 4000, 0), new Chamfer(0, 0, Chamfer.ChamferTypeEnum.CHAMFER_ARC_POINT)),
+                new ContourPoint(new Point(0, 6000, 0), null)
+            };
+
+            // Set specific properties for ContourPlate.
+            contourPoints[1].Chamfer.DZ1 = 2500;
+            contourPoints[1].Chamfer.DZ2 = 300;
+
+            return contourPoints;
+        }
+
+        /// <summary>
+        /// Creates and inserts a ContourPlate instance.
+        /// </summary>
+        /// <param name="contourPoints">The list of ContourPoints for ContourPlate.</param>
+        /// <returns>The created ContourPlate or null if unsuccessful.</returns>
+        private ContourPlate CreateAndInsertContourPlate(List<ContourPoint> contourPoints)
+        {
+            // Create a ContourPlate instance.
+            var contourPlate = new ContourPlate();
+
+            // Add ContourPoints to the ContourPlate.
+            contourPlate.Contour.ContourPoints.Add(contourPoints);
+
+            // Set properties of the ContourPlate.
+            contourPlate.Profile.ProfileString = "PL10";
+            contourPlate.Finish = "FOO";
+            contourPlate.Material.MaterialString = "Concrete_Undefined";
+            contourPlate.Name = "FOOSLAB";
+
+            // Insert the ContourPlate and handle failure.
+            if (!contourPlate.Insert())
+            {
+                WriteLine("ContourPlateTest failed - unable to create contour plate");
+                MessageBox.Show("Insert failed!");
+                return null;
+            }
+
+            // Add the ContourPlate to the ObjectList.
+            _objectList.Add(contourPlate);
+
+            return contourPlate;
+        }
+
 
         /// <summary>
         /// Performs a test for BooleanPart creation and insertion.
@@ -457,67 +557,107 @@ namespace ObjectTestApplication
         /// <returns>The ID of the created CutPlane as a string.</returns>
         private string CutTest()
         {
-            // Display message indicating the start of CutTest.
             WriteLine("Starting CutTest...");
 
             // Create points for Beam creation.
-            var point = new Point(5000, 5000, 0);
-            var point2 = new Point(6000, 5000, 0);
+            var beamStartPoint = new Point(5000, 5000, 0);
+            var beamEndPoint = new Point(6000, 5000, 0);
 
-            // Create the Beam instance.
-            var beam = new Beam();
-            beam.StartPoint = point;
-            beam.EndPoint = point2;
-            beam.Profile.ProfileString = "HI400-15-20*400";
-            beam.Material.MaterialString = "Steel_Undefined";
-            beam.Finish = "PAINT";
-
-            // Insert the Beam and handle failure.
-            if (!beam.Insert())
+            // Create and insert the Beam.
+            var beam = CreateAndInsertBeam(beamStartPoint, beamEndPoint);
+            if (beam == null)
             {
-                WriteLine("CutTest failed - unable to create beam");
-                MessageBox.Show("Insert failed!");
                 return string.Empty;
             }
-            else
-            {
-                // Add the Beam to the ObjectList.
-                _objectList.Add(beam);
-            }
 
-            // Create a CutPlane instance and set its properties.
-            var cut = new CutPlane();
-            cut.Father = beam;
-            cut.Plane.Origin = new Point(5500, 0, 0);
-            cut.Plane.AxisX = new Vector(0, 1.0, 0);
-            cut.Plane.AxisY = new Vector(0, 0, 1.0);
-
-            // Insert the CutPlane and handle failure.
-            if (!cut.Insert())
+            // Create and insert the CutPlane.
+            var cut = CreateAndInsertCutPlane(beam);
+            if (cut == null)
             {
-                WriteLine("CutTest failed - unable to create cut");
-                MessageBox.Show("Insert failed!");
                 return string.Empty;
             }
-            else
-            {
-                // Add the CutPlane to the ObjectList.
-                _objectList.Add(cut);
-            }
 
-            // Select the CutPlane and modify it, then display completion message.
+            // Select the CutPlane, modify it, and display completion message.
             if (!cut.Select())
+            {
                 MessageBox.Show("Select failed!");
+            }
 
-            cut.Plane.AxisX = new Vector(0, 500, 0);
-            cut.Plane.AxisY = new Vector(0, 0, 5000);
+            ModifyCutPlaneAxes(cut, new Vector(0, 500, 0), new Vector(0, 0, 5000));
 
             if (!cut.Modify())
+            {
                 MessageBox.Show("Modify failed!");
+            }
 
             WriteLine("CutTest complete!");
             return cut.Identifier.ID.ToString();
         }
+
+        /// <summary>
+        /// Creates and inserts a Beam with the specified start and end points.
+        /// </summary>
+        /// <param name="startPoint">The start point of the Beam.</param>
+        /// <param name="endPoint">The end point of the Beam.</param>
+        /// <returns>The created Beam or null if unsuccessful.</returns>
+        private Beam CreateAndInsertBeam(Point startPoint, Point endPoint)
+        {
+            var beam = new Beam
+            {
+                StartPoint = startPoint,
+                EndPoint = endPoint,
+                Profile = { ProfileString = "HI400-15-20*400" },
+                Material = { MaterialString = "Steel_Undefined" },
+                Finish = "PAINT"
+            };
+
+            if (!beam.Insert())
+            {
+                WriteLine("CutTest failed - unable to create beam");
+                MessageBox.Show("Insert failed!");
+                return null;
+            }
+
+            _objectList.Add(beam);
+            return beam;
+        }
+
+        /// <summary>
+        /// Creates and inserts a CutPlane associated with the given Beam.
+        /// </summary>
+        /// <param name="beam">The Beam associated with the CutPlane.</param>
+        /// <returns>The created CutPlane or null if unsuccessful.</returns>
+        private CutPlane CreateAndInsertCutPlane(Beam beam)
+        {
+            var cut = new CutPlane
+            {
+                Father = beam,
+                Plane = { Origin = new Point(5500, 0, 0), AxisX = new Vector(0, 1.0, 0), AxisY = new Vector(0, 0, 1.0) }
+            };
+
+            if (!cut.Insert())
+            {
+                WriteLine("CutTest failed - unable to create cut");
+                MessageBox.Show("Insert failed!");
+                return null;
+            }
+
+            _objectList.Add(cut);
+            return cut;
+        }
+
+        /// <summary>
+        /// Modifies the axes of the CutPlane.
+        /// </summary>
+        /// <param name="cutPlane">The CutPlane to modify.</param>
+        /// <param name="newAxisX">The new AxisX vector.</param>
+        /// <param name="newAxisY">The new AxisY vector.</param>
+        private void ModifyCutPlaneAxes(CutPlane cutPlane, Vector newAxisX, Vector newAxisY)
+        {
+            cutPlane.Plane.AxisX = newAxisX;
+            cutPlane.Plane.AxisY = newAxisY;
+        }
+
 
         /// <summary>
         /// Performs a test for creating and modifying a Fitting.
@@ -967,7 +1107,7 @@ namespace ObjectTestApplication
                 if (!rebarGroup.Modify()) WriteLine("Rebar group disconnected from father");
                 WriteLine(rebarGroup.Identifier.ID.ToString());
             }
-            catch 
+            catch
             {
                 WriteLine("Rebar group disconnected from father");
             }
@@ -2382,9 +2522,9 @@ namespace ObjectTestApplication
             {
                 _objectList.Add(fatherBeam);
             }
-            
+
             WriteLine(fatherBeam.Identifier.ID.ToString());
-            
+
             var l = new LoadPoint();
             l.P = new Vector(3000, 4000, 5000);
             l.Moment = new Vector(6000, 7000, 8000);
@@ -3101,9 +3241,9 @@ namespace ObjectTestApplication
 
             var solid = beam.GetSolid();
 
-            var points = solid.IntersectAllFaces(new Point(0, 0, 0), 
+            var points = solid.IntersectAllFaces(new Point(0, 0, 0),
                 new Point(1000, 0, 0), new Point(0, 1000, 0));
-            
+
             //IEnumerator LoopsEnum = Points.GetEnumerator();
             var nLoops = 0;
             var nPoints = 0;
