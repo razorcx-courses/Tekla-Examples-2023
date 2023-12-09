@@ -124,6 +124,8 @@ namespace DimensionCreator
             foreach (Part part in drawingObjectEnumerator)
             {
                 var view = part.GetView() as View;
+                if(view.ViewType != View.ViewTypes.FrontView) continue;
+
                 var savePlane = new Model().GetWorkPlaneHandler().GetCurrentTransformationPlane();
                 new Model().GetWorkPlaneHandler().SetCurrentTransformationPlane(new TransformationPlane(view.DisplayCoordinateSystem));
 
@@ -285,6 +287,12 @@ namespace DimensionCreator
                     var text = new Text(view, insertionPoint, "CL TOOL", new PointPlacing(), textAttributes);
                     text.Insert();
                 }
+
+                //all holes general note
+                var generalNote = new Text(sheet, new Point(170, 100), $@"ALL HOLES TO BE
+DIAMETER 13mm", new PointPlacing());
+                generalNote.Attributes.Frame = new Frame(FrameTypes.Rectangular, DrawingColors.Black);
+                generalNote.Insert();
 
                 new Model().GetWorkPlaneHandler().SetCurrentTransformationPlane(savePlane);
 
