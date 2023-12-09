@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DimensionCreator.cs" />
+    <Compile Include="DrawingProcessor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
