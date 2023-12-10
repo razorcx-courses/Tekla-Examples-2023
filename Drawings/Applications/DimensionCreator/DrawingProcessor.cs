@@ -4,7 +4,10 @@ using System.Linq;
 using Tekla.Structures.Drawing;
 using Tekla.Structures.Geometry3d;
 using Tekla.Structures.Model;
+using Tekla.Structures.Solid;
 using Part = Tekla.Structures.Drawing.Part;
+
+//using Part = Tekla.Structures.Drawing.Part;
 
 namespace DimensionCreator
 {
@@ -83,6 +86,8 @@ namespace DimensionCreator
         {
             // Get all drawing objects of type Part in the sheet
             var drawingObjectEnumerator = sheet.GetAllObjects(typeof(Part)).Cast<Part>();
+
+
 
             // Process each part in the sheet
             foreach (Part part in drawingObjectEnumerator)
@@ -193,7 +198,7 @@ namespace DimensionCreator
 
             boltMark.Attributes.LoadAttributes("SRS");
             boltMark.Attributes.Content.Clear();
-            boltMark.Attributes.Content.Add(new TextElement($"{beam.GetBolts().Count} HOLES DIA 13"));
+            boltMark.Attributes.Content.Add(new TextElement($"{beam.GetBolts().Cast<BoltArray>.Count} HOLES DIA 13"));
             boltMark.Placing = new LeaderLinePlacing(beam.BoltArray.BoltPositions.First());
 
             var inPoint = new Point(beam.BoltArray.BoltPositions.First());
@@ -244,7 +249,9 @@ namespace DimensionCreator
         /// <param name="part">The part associated with the hole notes.</param>
         private void ProcessHoleNotes(Part part)
         {
-            var middleBoltPositions = part.GetBolts()
+            var beam = part as Beam;
+
+            var middleBoltPositions = beam.GetBoltArrays()
                 .SelectMany(b => b.BoltPositions.OfType<Point>().OrderBy(p => p.X).ToList())
                 .Skip(1)
                 .Where((x, i) => i % 3 == 0)
@@ -270,6 +277,111 @@ namespace DimensionCreator
             var generalNote = new Text(part.GetView(), new Point(170, 100), "ALL HOLES TO BE\nDIAMETER 13mm", new PointPlacing());
             generalNote.Attributes.Frame = new Frame(FrameTypes.Rectangular, DrawingColors.Black);
             generalNote.Insert();
+        }
+    }
+
+    public static class SheetExtensions
+    {
+        /// <summary>
+        /// Get all objects of a specific type from the sheet.
+        /// </summary>
+        /// <typeparam name="T">Type of objects to retrieve.</typeparam>
+        /// <param name="sheet">The sheet to get objects from.</param>
+        /// <returns>List of objects of the specified type.</returns>
+        public static List<T> Cast<T>(this ContainerView sheet)
+        {
+            // Initialize the list to store objects
+            var objectsOfTypeT = new List<T>();
+
+            // Get the enumerator for the specified type
+            var drawingObjectEnumerator = sheet.GetAllObjects(typeof(T));
+
+            // Iterate over the enumerator and add objects to the list
+            while (drawingObjectEnumerator.MoveNext())
+            {
+                var currentObject = drawingObjectEnumerator.Current;
+                if (currentObject is T typedObject)
+                {
+                    objectsOfTypeT.Add(typedObject);
+                }
+                else
+                {
+                    // Handle the case where the object is not of the expected type
+                    throw new InvalidOperationException($"Unexpected type encountered: {currentObject.GetType().Name}");
+                }
+            }
+
+            return objectsOfTypeT;
+        }
+
+
+        /// <summary>
+        /// Get all bolts associated with the beam.
+        /// </summary>
+        /// <param name="beam">The beam to get bolts from.</param>
+        /// <returns>List of bolts associated with the beam.</returns>
+        public static List<BoltArray> GetBoltArrays(this Beam beam)
+        {
+            // Ensure the beam is not null
+            if (beam == null)
+            {
+                throw new ArgumentNullException(nameof(beam));
+            }
+
+            // Get the bolts enumerator from the beam
+            var boltObjects = beam.GetBolts();
+
+            // Initialize the list to store bolts
+            var boltsList = new List<BoltArray>();
+
+            // Iterate over the enumerator and add bolts to the list
+            while (boltObjects.MoveNext())
+            {
+                var currentObject = boltObjects.Current;
+                if (currentObject is BoltArray boltArray)
+                {
+                    boltsList.Add(boltArray);
+                }
+                else
+                {
+                    // Handle the case where the object is not a BoltArray
+                    throw new InvalidOperationException($"Unexpected type encountered: {currentObject.GetType().Name}");
+                }
+            }
+
+            return boltsList;
+        }
+
+        public static List<BoltArray> CastTo<T>(this DrawingEnumerator enumerator)
+        {
+            // Ensure the enumerator is not null
+            if (enumerator == null)
+            {
+                throw new ArgumentNullException(nameof(enumerator));
+            }
+
+            // Get the bolts enumerator from the beam
+
+            // Initialize the list to store bolts
+            var boltsList = new List<BoltArray>();
+
+            // Iterate over the enumerator and add bolts to the list
+            while (enumerator.MoveNext())
+            {
+                var currentObject = enumerator.Current;
+                if (currentObject is DrawingObject)
+                {
+                    currentObject.
+                    boltsList.Add(boltArray);
+                }
+                else
+                {
+                    // Handle the case where the object is not a BoltArray
+                    throw new InvalidOperationException($"Unexpected type encountered: {currentObject.GetType().Name}");
+                }
+            }
+
+            return boltsList;
         }
     }
 }
