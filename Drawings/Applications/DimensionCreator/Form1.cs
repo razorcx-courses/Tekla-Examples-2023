@@ -191,8 +191,12 @@ namespace DimensionCreator
                 middleBoltPositions.ForEach(b => boltPointList.Add(b));
                 boltPointList.Add(beam.EndPoint);
 
+                //create bolt dimensions
                 viewBase = part.GetView();
                 attr = new StraightDimensionSet.StraightDimensionSetAttributes(part, "SRS");
+
+                var ce = new ContainerElement { new TextElement("CL TOOL") };
+                attr.LeftMiddleTag = ce;
 
                 if (Math.Abs(beam.StartPoint.X - beam.EndPoint.X) > 0.1)
                 {
