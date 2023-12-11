@@ -134,16 +134,30 @@ namespace DimensionCreator
                 var identifier = part.ModelIdentifier;
                 var modelSideObject = new Model().SelectModelObject(identifier);
 
+                //this wont work with beam end extensions
+                //need to use actual part Solid and/or part centerline
+
                 var pointList = new PointList();
                 var beam = new Beam();
+                var centerline = new List<Point>();
+
                 if (modelSideObject is Beam)
                 {
                     beam.Identifier = identifier;
                     beam.Select();
 
-                    pointList.Add(beam.StartPoint);
-                    pointList.Add(beam.EndPoint);
+                    //pointList.Add(beam.StartPoint);
+                    //pointList.Add(beam.EndPoint);
+
+                    //var solid = beam.GetSolid(Solid.SolidCreationTypeEnum.NORMAL);
+                    centerline = beam.GetCenterLine(true).OfType<Point>().ToList();
+
+                    pointList.Add(centerline.First());
+                    pointList.Add(centerline.Last());
                 }
+
+
+
 
                 var viewBase = part.GetView();
                 var attr = new StraightDimensionSet.StraightDimensionSetAttributes(part, "SRS-OVERALL");
@@ -189,9 +203,10 @@ namespace DimensionCreator
 
                 var boltPointList = new PointList();
 
-                boltPointList.Add(beam.StartPoint);
+                //use beam centerline for start and end points of bolt dimensions
+                boltPointList.Add(centerline.First());
                 middleBoltPositions.ForEach(b => boltPointList.Add(b));
-                boltPointList.Add(beam.EndPoint);
+                boltPointList.Add(centerline.Last());
 
                 //create bolt dimensions
                 viewBase = part.GetView();
