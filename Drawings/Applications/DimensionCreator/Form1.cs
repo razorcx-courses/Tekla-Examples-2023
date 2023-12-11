@@ -106,6 +106,8 @@ namespace DimensionCreator
             //delete mark sets
             objList.Where(o => o is MarkSet).ToList().ForEach(o => o.Delete());
 
+            objList.Where(o => o is Mark).ToList().ForEach(o => o.Delete());
+
             //delete dimension
             objList.Where(o => o is StraightDimensionSet).ToList().ForEach(o => o.Delete());
 
